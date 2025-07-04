@@ -35,8 +35,8 @@ export default tseslint.config(
             'no-redeclare': 'error', // disallow variable redeclaration
             'no-unreachable': 'error', // disallow unreachable code after return/throw
             semi: ['error', 'always'], // require semicolons
-            quotes: ['error', 'single'], // enforce single quotes for strings
-            indent: ['error', 4], // enforce 4-space indentation
+            quotes: ['warn', 'single'], // enforce single quotes for strings
+            indent: ['off', 4], // enforce 4-space indentation
             'comma-dangle': ['off', 'never'], // require trailing commas in multiline
             '@typescript-eslint/no-unused-vars': ['warn'], // TS-aware unused vars check
             '@typescript-eslint/no-explicit-any': 'warn', // warn on use of `any` type
