@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { dbConnectionProvider } from './dbConnection.provider';
+import { dbConnectionProvider } from './db-connection.provider';
 
 @Module({
     providers: [dbConnectionProvider],
