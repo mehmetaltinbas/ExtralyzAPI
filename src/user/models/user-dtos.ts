@@ -1,5 +1,6 @@
 export class SignUpUserDto {
     readonly userName: string | undefined;
+    readonly email: string | undefined;
     readonly password: string | undefined;
 }
 

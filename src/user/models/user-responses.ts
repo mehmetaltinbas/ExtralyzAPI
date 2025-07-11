@@ -1,10 +1,10 @@
 import ResponseBase from 'src/shared/interfaces/response-base.interface';
 import { UserDocument } from './user-interfaces';
 
-export interface ReadAllResponse extends ResponseBase {
+export interface ReadAllUsersResponse extends ResponseBase {
     users: UserDocument[];
 }
 
-export interface ReadByIdResponse extends ResponseBase {
+export interface ReadSingleUserResponse extends ResponseBase {
     user?: UserDocument;
 }

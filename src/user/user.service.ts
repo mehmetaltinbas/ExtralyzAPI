@@ -3,19 +3,26 @@ import { SignUpUserDto, UpdateUserDto } from './models/user-dtos';
 import { UserDocument } from './models/user-interfaces';
 import { Model } from 'mongoose';
 import ResponseBase from 'src/shared/interfaces/response-base.interface';
-import { ReadAllResponse, ReadByIdResponse } from './models/user-responses';
+import { ReadAllUsersResponse, ReadSingleUserResponse } from './models/user-responses';
 import bcrypt from 'bcrypt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
-    constructor(@Inject('DB_MODELS') private db: Record<'User', Model<UserDocument>>) {}
+    constructor(
+        @Inject('DB_MODELS') private db: Record<'User', Model<UserDocument>>,
+        private configService: ConfigService
+    ) {}
 
     async createAsync(signUpUserDto: SignUpUserDto): Promise<ResponseBase> {
         const { password, ...restOfSignUpUserDto } = signUpUserDto;
         if (!password) {
             return { isSuccess: false, message: 'no password provided' };
         }
-        const passwordHash = await bcrypt.hash(password, 10);
+        const passwordHash = await bcrypt.hash(
+            password,
+            this.configService.get<number>('BCRYPT_SALT_OR_ROUNDS') || 10
+        );
         const user = await this.db.User.create({
             passwordHash,
             ...restOfSignUpUserDto,
@@ -34,12 +41,12 @@ export class UserService {
         return { isSuccess: true, message: 'authorized' };
     }
 
-    async readAllAsync(): Promise<ReadAllResponse> {
+    async readAllAsync(): Promise<ReadAllUsersResponse> {
         const users = await this.db.User.find().exec();
         return { isSuccess: true, message: 'all users read', users };
     }
 
-    async readByIdAsync(id: string): Promise<ReadByIdResponse> {
+    async readByIdAsync(id: string): Promise<ReadSingleUserResponse> {
         const user = await this.db.User.findById(id).exec();
         if (!user) {
             return { isSuccess: false, message: `user with id ${id} couldn't read` };
@@ -47,8 +54,27 @@ export class UserService {
         return { isSuccess: true, message: `user with id ${id} read`, user };
     }
 
+    async readByUserName(userName: string): Promise<ReadSingleUserResponse> {
+        const user = await this.db.User.findOne({ userName });
+        if (!user) {
+            return {
+                isSuccess: false,
+                message: `user couldn't read with userName: ${userName}`,
+            };
+        }
+        return { isSuccess: true, message: `user read with userName: ${userName}`, user };
+    }
+
     async updateByIdAsync(id: string, updateUserDto: UpdateUserDto): Promise<ResponseBase> {
-        const user = await this.db.User.findByIdAndUpdate(id, updateUserDto);
+        const { password, ...restOfUpdateUserDto } = updateUserDto;
+        if (!password) {
+            return { isSuccess: false, message: 'password is not provided' };
+        }
+        const passwordHash = await bcrypt.hash(password, 10);
+        const user = await this.db.User.findByIdAndUpdate(id, {
+            passwordHash,
+            ...restOfUpdateUserDto,
+        });
         if (!user) {
             return { isSuccess: false, message: "user couldn't updated" };
         }
