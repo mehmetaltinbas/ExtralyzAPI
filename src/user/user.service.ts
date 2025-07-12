@@ -16,13 +16,7 @@ export class UserService {
 
     async createAsync(signUpUserDto: SignUpUserDto): Promise<ResponseBase> {
         const { password, ...restOfSignUpUserDto } = signUpUserDto;
-        if (!password) {
-            return { isSuccess: false, message: 'no password provided' };
-        }
-        const passwordHash = await bcrypt.hash(
-            password,
-            this.configService.get<number>('BCRYPT_SALT_OR_ROUNDS') || 10
-        );
+        const passwordHash = await bcrypt.hash(password, 10);
         const user = await this.db.User.create({
             passwordHash,
             ...restOfSignUpUserDto,
@@ -31,14 +25,6 @@ export class UserService {
             return { isSuccess: false, message: "user couldn't created" };
         }
         return { isSuccess: true, message: 'user created' };
-    }
-
-    async signInAsync(): Promise<ResponseBase> {
-        return { isSuccess: true, message: 'user signed in' };
-    }
-
-    async authorizeAsync(): Promise<ResponseBase> {
-        return { isSuccess: true, message: 'authorized' };
     }
 
     async readAllAsync(): Promise<ReadAllUsersResponse> {

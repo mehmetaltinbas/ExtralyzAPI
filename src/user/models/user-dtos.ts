@@ -1,7 +1,12 @@
+import { IsEmail, IsNotEmpty, IsNumber } from 'class-validator';
+
 export class SignUpUserDto {
-    readonly userName: string | undefined;
-    readonly email: string | undefined;
-    readonly password: string | undefined;
+    @IsNotEmpty()
+    readonly userName!: string;
+    @IsEmail()
+    readonly email!: string;
+    @IsNotEmpty()
+    readonly password!: string;
 }
 
 export class UpdateUserDto {

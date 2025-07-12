@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import bcrypt from 'bcrypt';
 import { SignInDto } from './models/auth-dtos';
 import { SignInResponse } from './models/auth-responses';
+import ResponseBase from 'src/shared/interfaces/response-base.interface';
 
 @Injectable()
 export class AuthService {
@@ -39,5 +40,9 @@ export class AuthService {
         };
         const jwt = await this.jwtService.signAsync(payload);
         return { isSuccess: true, message: 'user signed in', jwt };
+    }
+
+    async authorizeAsync(): Promise<ResponseBase> {
+        return { isSuccess: true, message: 'authorized' };
     }
 }

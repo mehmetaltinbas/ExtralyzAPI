@@ -1,5 +1,14 @@
-// eslint-disable-next-line no-redeclare
-import { Controller, Post, Get, Patch, Delete, Inject, Body, Param } from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Get,
+    Patch,
+    Delete,
+    Inject, // eslint-disable-next-line no-redeclare
+    Body,
+    Param,
+    ParseIntPipe,
+} from '@nestjs/common';
 import { SignUpUserDto, UpdateUserDto } from './models/user-dtos';
 import { UserService } from './user.service';
 import ResponseBase from 'src/shared/interfaces/response-base.interface';
@@ -9,15 +18,14 @@ import { ReadAllUsersResponse, ReadSingleUserResponse } from './models/user-resp
 export class UserController {
     constructor(private userService: UserService) {}
 
+    @Post('test')
+    async test(@Body() body: SignUpUserDto): Promise<object> {
+        return body;
+    }
+
     @Post('signup')
     async signUp(@Body() signUpUserDto: SignUpUserDto): Promise<ResponseBase> {
         const response = await this.userService.createAsync(signUpUserDto);
-        return response;
-    }
-
-    @Post('authorize')
-    async authorize(): Promise<ResponseBase> {
-        const response = await this.userService.authorizeAsync();
         return response;
     }
 
