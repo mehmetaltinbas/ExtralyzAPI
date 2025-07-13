@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import bcrypt from 'bcrypt';
 import { SignInDto } from './models/auth-dtos';
 import { SignInResponse } from './models/auth-responses';
-import ResponseBase from 'src/shared/interfaces/response-base.interface';
+import ResponseBase from '../shared/interfaces/response-base.interface';
+import JwtPayload from './jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
@@ -16,11 +17,6 @@ export class AuthService {
     ) {}
 
     async signInAsync(signInUserDto: SignInDto): Promise<SignInResponse> {
-        if (!signInUserDto.userName) {
-            return { isSuccess: false, message: 'userName not provided' };
-        } else if (!signInUserDto.password) {
-            return { isSuccess: false, message: 'password not provided' };
-        }
         const readSingleUserResponse = await this.userService.readByUserName(
             signInUserDto.userName
         );
@@ -34,7 +30,7 @@ export class AuthService {
         if (!isMatch) {
             return { isSuccess: false, message: 'password is incorrect' };
         }
-        const payload = {
+        const payload: JwtPayload = {
             sub: readSingleUserResponse.user._id,
             userName: readSingleUserResponse.user.userName,
         };

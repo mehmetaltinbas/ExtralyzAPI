@@ -8,6 +8,7 @@ import {
     Body,
     Param,
     ParseIntPipe,
+    Type,
 } from '@nestjs/common';
 import { SignUpUserDto, UpdateUserDto } from './models/user-dtos';
 import { UserService } from './user.service';
@@ -19,8 +20,8 @@ export class UserController {
     constructor(private userService: UserService) {}
 
     @Post('test')
-    async test(@Body() body: SignUpUserDto): Promise<object> {
-        return body;
+    async test(@Body() body: SignUpUserDto): Promise<string> {
+        return `test`;
     }
 
     @Post('signup')
