@@ -1,9 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SignUpUserDto, UpdateUserDto } from './models/user-dtos';
-import { UserDocument } from './models/user-interfaces';
+import { SignUpUserDto, UpdateUserDto } from './types/user-dtos';
+import { UserDocument } from './types/user-interfaces';
 import { Model } from 'mongoose';
 import ResponseBase from 'src/shared/interfaces/response-base.interface';
-import { ReadAllUsersResponse, ReadSingleUserResponse } from './models/user-responses';
+import {
+    ReadAllUsersResponse,
+    ReadSingleUserResponse,
+    SignUpResponse,
+} from './types/user-responses';
 import bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 
@@ -14,17 +18,14 @@ export class UserService {
         private configService: ConfigService
     ) {}
 
-    async createAsync(signUpUserDto: SignUpUserDto): Promise<ResponseBase> {
+    async createAsync(signUpUserDto: SignUpUserDto): Promise<SignUpResponse> {
         const { password, ...restOfSignUpUserDto } = signUpUserDto;
         const passwordHash = await bcrypt.hash(password, 10);
         const user = await this.db.User.create({
             passwordHash,
             ...restOfSignUpUserDto,
         });
-        if (!user) {
-            return { isSuccess: false, message: "user couldn't created" };
-        }
-        return { isSuccess: true, message: 'user created' };
+        return { isSuccess: true, message: 'user created', user };
     }
 
     async readAllAsync(): Promise<ReadAllUsersResponse> {

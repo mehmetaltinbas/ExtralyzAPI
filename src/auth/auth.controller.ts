@@ -1,8 +1,18 @@
 // eslint-disable-next-line no-redeclare
-import { Body, Controller, Req, Post, Get, Patch, Delete, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Req,
+    Post,
+    Get,
+    Patch,
+    Delete,
+    UseGuards,
+    HttpCode,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto } from './models/auth-dtos';
-import { SignInResponse } from './models/auth-responses';
+import { SignInDto } from './types/auth-dtos';
+import { SignInResponse } from './types/auth-responses';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import { AuthGuard } from './auth.guard';
 import { Request as ExpressRequest } from 'express';
@@ -11,11 +21,7 @@ import { Request as ExpressRequest } from 'express';
 export class AuthController {
     constructor(private authService: AuthService) {}
 
-    @Get('test')
-    async test(): Promise<string> {
-        return 'tested brother tested via bitchheassss';
-    }
-
+    @HttpCode(200)
     @Post('signin')
     async signIn(@Body() signInDto: SignInDto): Promise<SignInResponse> {
         const response = await this.authService.signInAsync(signInDto);
@@ -26,7 +32,6 @@ export class AuthController {
     @Get('authorize')
     async authorize(@Req() req: ExpressRequest): Promise<ResponseBase> {
         const response = await this.authService.authorizeAsync();
-        console.log(req.user);
         return response;
     }
 }

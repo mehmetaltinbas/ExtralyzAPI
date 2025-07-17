@@ -7,13 +7,18 @@ import {
     Inject, // eslint-disable-next-line no-redeclare
     Body,
     Param,
-    ParseIntPipe,
-    Type,
+    HttpCode,
+    UseGuards,
 } from '@nestjs/common';
-import { SignUpUserDto, UpdateUserDto } from './models/user-dtos';
+import { SignUpUserDto, UpdateUserDto } from './types/user-dtos';
 import { UserService } from './user.service';
-import ResponseBase from 'src/shared/interfaces/response-base.interface';
-import { ReadAllUsersResponse, ReadSingleUserResponse } from './models/user-responses';
+import ResponseBase from '../shared/interfaces/response-base.interface';
+import {
+    ReadAllUsersResponse,
+    ReadSingleUserResponse,
+    SignUpResponse,
+} from './types/user-responses';
+import { AuthGuard } from '../auth/auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -25,7 +30,7 @@ export class UserController {
     }
 
     @Post('signup')
-    async signUp(@Body() signUpUserDto: SignUpUserDto): Promise<ResponseBase> {
+    async signUp(@Body() signUpUserDto: SignUpUserDto): Promise<SignUpResponse> {
         const response = await this.userService.createAsync(signUpUserDto);
         return response;
     }
@@ -42,6 +47,7 @@ export class UserController {
         return response;
     }
 
+    @UseGuards(AuthGuard)
     @Patch('updatebyid/:id')
     async updateById(
         @Param('id') id: string,
@@ -51,6 +57,8 @@ export class UserController {
         return response;
     }
 
+    @UseGuards(AuthGuard)
+    @HttpCode(200)
     @Delete('deletebyid/:id')
     async deleteById(@Param('id') id: string): Promise<ResponseBase> {
         const response = this.userService.deleteByIdAsync(id);

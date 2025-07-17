@@ -40,6 +40,8 @@ export default tseslint.config(
             'require-await': 'off',
             'comma-dangle': ['off', 'never'], // require trailing commas in multiline
             'prettier/prettier': 'warn',
+            'prefer-const': 'warn',
+            'no-empty': 'warn',
             '@typescript-eslint/explicit-function-return-type': 'warn', // suggest explicit return types
             '@typescript-eslint/consistent-type-definitions': ['error', 'interface'], // enforce interfaces for object types
             '@typescript-eslint/ban-ts-comment': 'warn', // warn on disabling TS checks with comments

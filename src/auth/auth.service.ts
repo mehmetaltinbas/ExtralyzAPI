@@ -3,8 +3,8 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import bcrypt from 'bcrypt';
-import { SignInDto } from './models/auth-dtos';
-import { SignInResponse } from './models/auth-responses';
+import { SignInDto } from './types/auth-dtos';
+import { SignInResponse } from './types/auth-responses';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import JwtPayload from './jwt-payload.interface';
 
@@ -35,7 +35,12 @@ export class AuthService {
             userName: readSingleUserResponse.user.userName,
         };
         const jwt = await this.jwtService.signAsync(payload);
-        return { isSuccess: true, message: 'user signed in', jwt };
+        return {
+            isSuccess: true,
+            message: 'user signed in',
+            jwt,
+            userId: readSingleUserResponse.user._id,
+        };
     }
 
     async authorizeAsync(): Promise<ResponseBase> {
