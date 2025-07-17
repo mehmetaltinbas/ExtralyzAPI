@@ -1,0 +1,19 @@
+services:
+    dev-db:
+        image: mongo:latest
+        container_name: extralyz-dev-db
+        ports:
+          - "10000:27017"
+        volumes:
+          - dev-db-data:/data/db
+
+    test-db:
+        image: mongo:latest
+        container_name: extralyz-test-db
+        ports:
+          - "10010:27017"
+        tmpfs:
+          - /data/db
+
+volumes:
+    dev-db-data:

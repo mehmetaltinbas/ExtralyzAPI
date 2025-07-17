@@ -7,6 +7,7 @@ import { SignInResponse } from '../src/auth/types/auth-responses';
 import { SignInAuthTestData } from '../src/auth/types/auth-test-datas';
 import { UserCredentialsTestData } from '../src/user/types/user-test-datas';
 import { waitForUserSignUp } from './user.e2e-spec';
+import { cleanDb } from '../src/db/db-models.provider';
 
 let authData: SignInAuthTestData = {
     jwt: '',
@@ -31,6 +32,8 @@ describe('Auth', () => {
         const moduleFixture: TestingModule = await Test.createTestingModule({
             imports: [AppModule],
         }).compile();
+
+        cleanDb();
 
         app = moduleFixture.createNestApplication();
         app.useGlobalPipes(
