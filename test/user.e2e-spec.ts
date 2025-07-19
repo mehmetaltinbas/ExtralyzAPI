@@ -2,11 +2,11 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
 import { ReadSingleUserResponse, SignUpResponse } from '../src/user/types/user-responses';
-import { readJwt } from './auth.e2e-spec';
+import { readJwt } from './utilities/auth.utility';
 import { getAppInstance } from './app-setup';
 import { userCredentials } from './mocks/shared.mock';
-import { writeValueToGlobalTestDataFile } from './data/global-test-data.util';
-import GlobalTestDataEnum from './data/global-test-data.enum';
+import testData from './data/test-data.util';
+import { TestDataKeys } from './data/test-data-keys.enum';
 
 describe('User', () => {
     let app: INestApplication<App>;
@@ -26,108 +26,103 @@ describe('User', () => {
                 .expect(400);
         });
 
-        // it('should throw a bad request error due to the missing email field', () => {
-        //     return request(app.getHttpServer())
-        //         .post('/user/signup')
-        //         .send({
-        //             userName: userCredentials.userName,
-        //             password: userCredentials.password,
-        //         })
-        //         .expect(400);
-        // });
+        it('should throw a bad request error due to the missing email field', () => {
+            return request(app.getHttpServer())
+                .post('/user/signup')
+                .send({
+                    userName: userCredentials.userName,
+                    password: userCredentials.password,
+                })
+                .expect(400);
+        });
 
-        // it('should throw a bad request error due to the missing password field', () => {
-        //     return request(app.getHttpServer())
-        //         .post('/user/signup')
-        //         .send({ userName: userCredentials.userName, email: userCredentials.email })
-        //         .expect(400);
-        // });
+        it('should throw a bad request error due to the missing password field', () => {
+            return request(app.getHttpServer())
+                .post('/user/signup')
+                .send({ userName: userCredentials.userName, email: userCredentials.email })
+                .expect(400);
+        });
 
-        // it('should throw a bad request error due to the invalid email format', () => {
-        //     return request(app.getHttpServer())
-        //         .post('/user/signup')
-        //         .send({
-        //             userName: userCredentials.userName,
-        //             email: 'altinbasmehmet.41gmail.com',
-        //             password: userCredentials.password,
-        //         })
-        //         .expect(400);
-        // });
+        it('should throw a bad request error due to the invalid email format', () => {
+            return request(app.getHttpServer())
+                .post('/user/signup')
+                .send({
+                    userName: userCredentials.userName,
+                    email: 'altinbasmehmet.41gmail.com',
+                    password: userCredentials.password,
+                })
+                .expect(400);
+        });
 
-        // it('should throw a bad request error due to the invalid email format', () => {
-        //     return request(app.getHttpServer())
-        //         .post('/user/signup')
-        //         .send({
-        //             userName: userCredentials.userName,
-        //             email: 'altinbasmehmet.41@gmail',
-        //             password: userCredentials.password,
-        //         })
-        //         .expect(400);
-        // });
+        it('should throw a bad request error due to the invalid email format', () => {
+            return request(app.getHttpServer())
+                .post('/user/signup')
+                .send({
+                    userName: userCredentials.userName,
+                    email: 'altinbasmehmet.41@gmail',
+                    password: userCredentials.password,
+                })
+                .expect(400);
+        });
 
         it('should signup successfully', () => {
             return request(app.getHttpServer())
                 .post('/user/signup')
                 .send(userCredentials)
-                .expect((res) => {
-                    console.log(`\nthis is just before the error\n`);
-                })
                 .expect(201)
                 .expect((res) => {
                     const resBody = res.body as SignUpResponse;
                     userId = resBody.user._id;
-                    console.log(`\njust before setting the variable: isUserSignedUp\n`);
-                    writeValueToGlobalTestDataFile(GlobalTestDataEnum.IS_USER_SIGNED_UP, true);
-                    console.log(`\nthis is just after the error\n`);
+                    testData.write(TestDataKeys.IS_USER_SIGNED_UP, true);
                 });
         });
     });
 
-    // it('should read all users ', () => {
-    //     return request(app.getHttpServer()).get('/user/readall').expect(200);
-    // });
+    it('should read all users ', () => {
+        return request(app.getHttpServer()).get('/user/readall').expect(200);
+    });
 
-    // describe('readById', () => {
-    //     it('should successfully read user by id', () => {
-    //         return request(app.getHttpServer())
-    //             .get(`/user/readbyid/${userId}`)
-    //             .expect(200)
-    //             .expect((res) => {
-    //                 const resBody = res.body as ReadSingleUserResponse;
-    //                 if (!resBody.user) {
-    //                     throw new Error("user couldn't be read");
-    //                 } else if (resBody.user.userName !== userCredentials.userName) {
-    //                     throw new Error(
-    //                         "the userName of the user being read doesn't match the true one"
-    //                     );
-    //                 }
-    //             });
-    //     });
-    // });
+    describe('readById', () => {
+        it('should successfully read user by id', () => {
+            return request(app.getHttpServer())
+                .get(`/user/readbyid/${userId}`)
+                .expect(200)
+                .expect((res) => {
+                    const resBody = res.body as ReadSingleUserResponse;
+                    if (!resBody.user) {
+                        throw new Error("user couldn't be read");
+                    } else if (resBody.user.userName !== userCredentials.userName) {
+                        throw new Error(
+                            "the userName of the user being read doesn't match the true one"
+                        );
+                    }
+                });
+        });
+    });
 
-    // describe('protected endpoints', () => {
-    //     let jwt: string;
+    describe('protected endpoints', () => {
+        let jwt: string;
 
-    //     beforeAll(async () => {
-    //         jwt = await readJwt();
-    //     }, TEST_TIMEOUT);
+        beforeAll(async () => {
+            jwt = await readJwt();
+        });
 
-    //     describe('updateById', () => {
-    //         it('should update user by id using jwt', () => {
-    //             return request(app.getHttpServer())
-    //                 .patch(`/user/updatebyid/${userId}`)
-    //                 .send({ email: 'altnbsmehmet@icloud.com' })
-    //                 .set({ authorization: `Bearer ${jwt}` });
-    //         });
-    //     });
+        describe('updateById', () => {
+            it('should update user by id using jwt', () => {
+                return request(app.getHttpServer())
+                    .patch(`/user/updatebyid/${userId}`)
+                    .send({ email: 'altnbsmehmet@icloud.com' })
+                    .set({ authorization: `Bearer ${jwt}` });
+            });
+        });
 
-    //     describe('deleteById', () => {
-    //         it('should delete user by id using jwt', () => {
-    //             return request(app.getHttpServer())
-    //                 .delete(`/user/deletebyid/${userId}`)
-    //                 .set({ authorization: `Bearer ${jwt}` })
-    //                 .expect(200);
-    //         });
-    //     });
-    // });
+        describe('deleteById', () => {
+            it('should delete user by id using jwt', () => {
+                return request(app.getHttpServer())
+                    .delete(`/user/deletebyid/${userId}`)
+                    .set({ authorization: `Bearer ${jwt}` })
+                    .expect(200);
+            });
+        });
+    });
 });

@@ -1,19 +1,15 @@
-import GlobalTestDataEnum from '../data/global-test-data.enum';
-import GlobalTestData from '../data/global-test-data.interface';
-import { readValueFromGlobalTestDataFile } from '../data/global-test-data.util';
+import { TestDataKeys } from '../data/test-data-keys.enum';
+import { TestData } from '../data/test-data.interface';
+import testData from '../data/test-data.util';
 
 export async function waitForSignUp(): Promise<void> {
-    const checkInterval = 500;
+    const checkInterval = 100;
     return new Promise((resolve) => {
-        const wait = () => {
-            const isUserSignedUp = readValueFromGlobalTestDataFile(
-                GlobalTestDataEnum.IS_USER_SIGNED_UP
-            );
+        const wait = (): void => {
+            const isUserSignedUp = testData.read(TestDataKeys.IS_USER_SIGNED_UP);
             if (isUserSignedUp) {
-                console.log('\nsignedUp\n');
                 resolve();
             } else {
-                console.log(`\nisUserSignedUp: ${isUserSignedUp}\n`);
                 setTimeout(wait, checkInterval);
             }
         };

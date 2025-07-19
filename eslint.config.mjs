@@ -35,19 +35,19 @@ export default tseslint.config(
             'no-redeclare': 'error', // disallow variable redeclaration
             'no-unreachable': 'error', // disallow unreachable code after return/throw
             semi: ['error', 'always'], // require semicolons
-            quotes: ['warn', 'single'], // enforce single quotes for strings
+            quotes: 'off', // enforce single quotes for strings
             indent: ['off', 4], // enforce 4-space indentation
             'require-await': 'off',
             'comma-dangle': ['off', 'never'], // require trailing commas in multiline
             'prettier/prettier': 'warn',
             'prefer-const': 'warn',
             'no-empty': 'warn',
-            '@typescript-eslint/explicit-function-return-type': 'warn', // suggest explicit return types
+            '@typescript-eslint/explicit-function-return-type': 'error', // suggest explicit return types
             '@typescript-eslint/consistent-type-definitions': ['error', 'interface'], // enforce interfaces for object types
             '@typescript-eslint/ban-ts-comment': 'warn', // warn on disabling TS checks with comments
             "@typescript-eslint/require-await": "warn",
             '@typescript-eslint/no-unsafe-call': 'off',
-            '@typescript-eslint/no-unused-vars': ['warn'], // TS-aware unused vars check
+            '@typescript-eslint/no-unused-vars': 'off', // TS-aware unused vars check
             '@typescript-eslint/no-explicit-any': 'warn', // warn on use of `any` type
             '@typescript-eslint/no-inferrable-types': 'warn', // warn on redundant type annotations
         },

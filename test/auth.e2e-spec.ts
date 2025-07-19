@@ -5,25 +5,14 @@ import { SignInResponse } from '../src/auth/types/auth-responses';
 import { getAppInstance } from './app-setup';
 import { userCredentials } from './mocks/shared.mock';
 import { waitForSignUp } from './utilities/user.utility';
-
-let jwt: string = '';
-let isJwtReady = false;
-export async function readJwt(): Promise<string> {
-    const checkInterval = 100;
-    return new Promise((resolve) => {
-        const waitForJwt = () => {
-            if (isJwtReady) {
-                resolve(jwt);
-            } else {
-                setTimeout(waitForJwt, checkInterval);
-            }
-        };
-        waitForJwt();
-    });
-}
+import { TestDataKeys } from './data/test-data-keys.enum';
+import { TestData } from './data/test-data.interface';
+import testData from './data/test-data.util';
 
 describe('Auth', () => {
     let app: INestApplication<App>;
+    let jwt: string;
+
     beforeAll(async () => {
         app = await getAppInstance();
     });
@@ -51,8 +40,8 @@ describe('Auth', () => {
                 });
             const responseBody = response.body as SignInResponse;
             jwt = responseBody.jwt!;
-            console.log(`here is the jwt from signin: ${jwt}`);
-            isJwtReady = true;
+            testData.write(TestDataKeys.JWT, jwt);
+            testData.write(TestDataKeys.IS_JWT_READY, true);
         });
     });
 
