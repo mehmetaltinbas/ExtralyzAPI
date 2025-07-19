@@ -8,7 +8,7 @@ export const dbConnectionProvider = {
         if (!dbConnection) {
             throw new Error('db connection is undefined');
         }
-        console.log('connectiong to mongodb...');
+        console.log('connecting to mongodb...');
         const connection = await mongoose.connect(dbConnection, {
             dbName: configService.get<string>('DB_NAME'),
         });

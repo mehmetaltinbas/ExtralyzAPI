@@ -1,59 +1,39 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from '../src/app.module';
 import { SignInResponse } from '../src/auth/types/auth-responses';
-import { SignInAuthTestData } from '../src/auth/types/auth-test-datas';
-import { UserCredentialsTestData } from '../src/user/types/user-test-datas';
-import { waitForUserSignUp } from './user.e2e-spec';
-import { cleanDb } from '../src/db/db-models.provider';
+import { getAppInstance } from './app-setup';
+import { userCredentials } from './mocks/shared.mock';
+import { waitForSignUp } from './utilities/user.utility';
 
-let authData: SignInAuthTestData = {
-    jwt: '',
-    userId: '',
-};
-let userCredentials: UserCredentialsTestData = {
-    userName: 'mehmetaltinbas',
-    email: 'altinbasmehmet.41@gmail.com',
-    password: 'Mehmet+123',
-};
-
-let isContinue = false;
-export async function readAuthData(): Promise<SignInAuthTestData> {
-    while (!isContinue) {}
-    return authData;
+let jwt: string = '';
+let isJwtReady = false;
+export async function readJwt(): Promise<string> {
+    const checkInterval = 100;
+    return new Promise((resolve) => {
+        const waitForJwt = () => {
+            if (isJwtReady) {
+                resolve(jwt);
+            } else {
+                setTimeout(waitForJwt, checkInterval);
+            }
+        };
+        waitForJwt();
+    });
 }
 
 describe('Auth', () => {
     let app: INestApplication<App>;
-
     beforeAll(async () => {
-        const moduleFixture: TestingModule = await Test.createTestingModule({
-            imports: [AppModule],
-        }).compile();
-
-        cleanDb();
-
-        app = moduleFixture.createNestApplication();
-        app.useGlobalPipes(
-            new ValidationPipe({
-                transform: true,
-                whitelist: true,
-            })
-        );
-        await app.init();
-
-        await waitForUserSignUp();
+        app = await getAppInstance();
     });
 
-    afterAll(async () => {
-        await app.close();
-        isContinue = true;
-    });
+    afterAll(async () => {});
 
     describe('signin', () => {
-        beforeAll(async () => {});
+        beforeAll(async () => {
+            await waitForSignUp();
+        });
 
         it('should signin', async () => {
             const response = await request(app.getHttpServer())
@@ -70,15 +50,16 @@ describe('Auth', () => {
                     }
                 });
             const responseBody = response.body as SignInResponse;
-            authData.jwt = responseBody.jwt!;
-            authData.userId = responseBody.userId!;
+            jwt = responseBody.jwt!;
+            console.log(`here is the jwt from signin: ${jwt}`);
+            isJwtReady = true;
         });
     });
 
     it('should test a protected route', () => {
         return request(app.getHttpServer())
             .get('/auth/authorize')
-            .set({ authorization: `Bearer ${authData.jwt}` })
+            .set({ authorization: `Bearer ${jwt}` })
             .send()
             .expect(200);
     });
