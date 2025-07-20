@@ -1,11 +1,12 @@
-import { getAppInstance } from './app-setup';
-import { initModels, cleanDb } from '../src/db/db-models.provider';
-import mongoose from 'mongoose';
+import { createTheApp } from './app-setup';
+import { cleanDb } from '../src/db/db-models.provider';
 import testData from './data/test-data.util';
+import { Mongoose } from 'mongoose';
 
 export default async function globalSetup(): Promise<void> {
-    await getAppInstance();
-    initModels(mongoose);
-    await cleanDb();
+    const app = await createTheApp();
+
+    const mongoose = app.get<Mongoose>('DB_CONNECTION');
+    await cleanDb(mongoose);
     testData.reset();
 }

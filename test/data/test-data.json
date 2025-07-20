@@ -1,1 +1,5 @@
-{"isUserSignedUp":false,"jwt":"","isJwtReady":false}
+{
+    "isUserSignedUp": false,
+    "jwt": "",
+    "isJwtReady": false
+}

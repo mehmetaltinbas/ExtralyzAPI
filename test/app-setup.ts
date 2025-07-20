@@ -5,7 +5,7 @@ import { AppModule } from '../src/app.module';
 
 let app: INestApplication<App> | null = null;
 
-export async function getAppInstance(): Promise<INestApplication<App>> {
+export async function createTheApp(): Promise<INestApplication<App>> {
     if (app) return app;
 
     const moduleFixture: TestingModule = await Test.createTestingModule({

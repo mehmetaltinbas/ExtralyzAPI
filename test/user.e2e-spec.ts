@@ -3,7 +3,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { ReadSingleUserResponse, SignUpResponse } from '../src/user/types/user-responses';
 import { readJwt } from './utilities/auth.utility';
-import { getAppInstance } from './app-setup';
+import { createTheApp } from './app-setup';
 import { userCredentials } from './mocks/shared.mock';
 import testData from './data/test-data.util';
 import { TestDataKeys } from './data/test-data-keys.enum';
@@ -13,7 +13,7 @@ describe('User', () => {
     let userId: string;
 
     beforeAll(async () => {
-        app = await getAppInstance();
+        app = await createTheApp();
     });
 
     afterAll(async () => {});
