@@ -4,6 +4,8 @@ import { CreateSourceDto, UpdateSourceDto } from './types/source-dtos';
 import { Model } from 'mongoose';
 import { SourceDocument } from './types/source-interfaces';
 import { ReadAllSourcesResponse, ReadSingleSourceResponse } from './types/source-responses';
+import { Express } from 'express';
+import getTextExtractorInstance from './text-extraction/text-extractor.factory';
 
 @Injectable()
 export class SourceService {
@@ -11,12 +13,16 @@ export class SourceService {
 
     async createAsync(
         userId: string,
-        createSourceDto: CreateSourceDto
+        createSourceDto: CreateSourceDto,
+        file: Express.Multer.File
     ): Promise<ResponseBase> {
-        const source = await this.db.Source.create(createSourceDto);
-        if (!source) {
-            return { isSuccess: false, message: "source couldn't created" };
-        }
+        // const source = await this.db.Source.create(createSourceDto);
+        // if (!source) {
+        //     return { isSuccess: false, message: "source couldn't created" };
+        // }
+        const textExtractor = getTextExtractorInstance(file.mimetype);
+        const extractedText = await textExtractor.extractText(file.buffer);
+        console.log(extractedText);
         return { isSuccess: true, message: 'source created' };
     }
 

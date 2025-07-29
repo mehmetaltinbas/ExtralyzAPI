@@ -10,6 +10,8 @@ import {
     HttpCode,
     UseGuards,
     Req,
+    UseInterceptors,
+    UploadedFile,
 } from '@nestjs/common';
 import { SourceService } from './source.service';
 import { CreateSourceDto, UpdateSourceDto } from './types/source-dtos';
@@ -18,18 +20,22 @@ import ResponseBase from '../shared/interfaces/response-base.interface';
 import { AuthGuard } from '../auth/auth.guard';
 import JwtPayload from '../auth/types/jwt-payload.interface';
 import User from '../shared/custom-decorators/user.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
 
 @Controller('source')
 export class SourceController {
     constructor(private sourceService: SourceService) {}
 
-    @UseGuards(AuthGuard)
     @Post('create')
+    @UseGuards(AuthGuard)
+    @UseInterceptors(FileInterceptor('file'))
     async create(
         @User() user: JwtPayload,
-        @Body() createSourceDto: CreateSourceDto
+        @Body() createSourceDto: CreateSourceDto,
+        @UploadedFile() file: Express.Multer.File
     ): Promise<ResponseBase> {
-        const response = await this.sourceService.createAsync(user.sub, createSourceDto);
+        const response = await this.sourceService.createAsync(user.sub, createSourceDto, file);
         return response;
     }
 

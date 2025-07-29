@@ -1,10 +1,13 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateSourceDto {
+    @IsOptional()
     readonly type!: string;
+    @IsOptional()
     readonly rawText!: string;
     // readonly locationType!: string;
     // readonly location!: string;
+    @IsOptional()
     readonly title!: string;
 }
 
