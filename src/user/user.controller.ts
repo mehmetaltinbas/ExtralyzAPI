@@ -9,9 +9,10 @@ import {
     Param,
     HttpCode,
     UseGuards,
+    Req,
 } from '@nestjs/common';
-import { SignUpUserDto, UpdateUserDto } from './types/user-dtos';
 import { UserService } from './user.service';
+import { SignUpUserDto, UpdateUserDto } from './types/user-dtos';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import {
     ReadAllUsersResponse,
@@ -19,13 +20,18 @@ import {
     SignUpResponse,
 } from './types/user-responses';
 import { AuthGuard } from '../auth/auth.guard';
+import { Request as ExpressRequest } from 'express';
+import User from '../shared/custom-decorators/user.decorator';
+import JwtPayload from '../auth/types/jwt-payload.interface';
 
 @Controller('user')
 export class UserController {
     constructor(private userService: UserService) {}
 
+    @UseGuards(AuthGuard)
     @Post('test')
-    async test(@Body() body: SignUpUserDto): Promise<string> {
+    async test(@User() user: JwtPayload): Promise<string> {
+        console.log(`userInformation: `, user);
         return `test`;
     }
 
@@ -35,20 +41,20 @@ export class UserController {
         return response;
     }
 
-    @Get('readall')
+    @Get('read-all')
     async readAll(): Promise<ReadAllUsersResponse> {
         const response = await this.userService.readAllAsync();
         return response;
     }
 
-    @Get('readbyid/:id')
+    @Get('read-by-id/:id')
     async readById(@Param('id') id: string): Promise<ReadSingleUserResponse> {
         const response = await this.userService.readByIdAsync(id);
         return response;
     }
 
     @UseGuards(AuthGuard)
-    @Patch('updatebyid/:id')
+    @Patch('update-by-id/:id')
     async updateById(
         @Param('id') id: string,
         @Body() updateUserDto: UpdateUserDto
@@ -58,8 +64,7 @@ export class UserController {
     }
 
     @UseGuards(AuthGuard)
-    @HttpCode(200)
-    @Delete('deletebyid/:id')
+    @Delete('delete-by-id/:id')
     async deleteById(@Param('id') id: string): Promise<ResponseBase> {
         const response = this.userService.deleteByIdAsync(id);
         return response;

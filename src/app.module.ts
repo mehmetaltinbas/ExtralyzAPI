@@ -4,6 +4,9 @@ import { DbConnectionModule } from './db/db-connection.module';
 import { DbModelsModule } from './db/db-models.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { SourceModule } from './source/source.module';
+import { ProcessedSourceModule } from './processed-source/processed-source.module';
+import { QuestionModule } from './question/question.module';
 
 @Module({
     imports: [
@@ -14,6 +17,9 @@ import { AuthModule } from './auth/auth.module';
         DbModelsModule,
         UserModule,
         AuthModule,
+        SourceModule,
+        ProcessedSourceModule,
+        QuestionModule,
     ],
     controllers: [],
     providers: [],

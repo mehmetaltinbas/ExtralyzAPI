@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import { SignInDto } from './types/auth-dtos';
 import { SignInResponse } from './types/auth-responses';
 import ResponseBase from '../shared/interfaces/response-base.interface';
-import JwtPayload from './jwt-payload.interface';
+import JwtPayload from './types/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {

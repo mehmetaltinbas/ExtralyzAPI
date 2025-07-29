@@ -85,7 +85,7 @@ describe('User', () => {
     describe('readById', () => {
         it('should successfully read user by id', () => {
             return request(app.getHttpServer())
-                .get(`/user/readbyid/${userId}`)
+                .get(`/user/read-by-id/${userId}`)
                 .expect(200)
                 .expect((res) => {
                     const resBody = res.body as ReadSingleUserResponse;
@@ -110,7 +110,7 @@ describe('User', () => {
         describe('updateById', () => {
             it('should update user by id using jwt', () => {
                 return request(app.getHttpServer())
-                    .patch(`/user/updatebyid/${userId}`)
+                    .patch(`/user/update-by-id/${userId}`)
                     .send({ email: 'altnbsmehmet@icloud.com' })
                     .set({ authorization: `Bearer ${jwt}` });
             });
@@ -119,7 +119,7 @@ describe('User', () => {
         describe('deleteById', () => {
             it('should delete user by id using jwt', () => {
                 return request(app.getHttpServer())
-                    .delete(`/user/deletebyid/${userId}`)
+                    .delete(`/user/delete-by-id/${userId}`)
                     .set({ authorization: `Bearer ${jwt}` })
                     .expect(200);
             });
