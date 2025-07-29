@@ -1,6 +1,6 @@
-import TextExtractorStrategy from './text-extractor.strategy.interface';
+import { TextExtractor } from './types/text-extractor.interface';
 
-// class DocTextExtractor implements TextExtractorStrategy {
+// class DocTextExtractor implements TextExtractor {
 //     extractText(fileBuffer: Buffer): Promise<string> {
 //         return 'done';
 //     }

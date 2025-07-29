@@ -5,11 +5,11 @@ import { Model } from 'mongoose';
 import { SourceDocument } from './types/source-interfaces';
 import { ReadAllSourcesResponse, ReadSingleSourceResponse } from './types/source-responses';
 import { Express } from 'express';
-import getTextExtractorInstance from './text-extraction/text-extractor.factory';
+import { TextExtractorService } from './text-extractor/text-extractor.service';
 
 @Injectable()
 export class SourceService {
-    constructor(@Inject('DB_MODELS') private db: Record<'Source', Model<SourceDocument>>) {}
+    constructor(@Inject('DB_MODELS') private db: Record<'Source', Model<SourceDocument>>, private textExtractorService: TextExtractorService) {}
 
     async createAsync(
         userId: string,
@@ -20,7 +20,7 @@ export class SourceService {
         // if (!source) {
         //     return { isSuccess: false, message: "source couldn't created" };
         // }
-        const textExtractor = getTextExtractorInstance(file.mimetype);
+        const textExtractor = this.textExtractorService.resolveExtractor(file.mimetype);
         const extractedText = await textExtractor.extractText(file.buffer);
         console.log(extractedText);
         return { isSuccess: true, message: 'source created' };
