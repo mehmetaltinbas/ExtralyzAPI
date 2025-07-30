@@ -9,17 +9,17 @@ import { TextExtractorService } from './text-extractor/text-extractor.service';
 
 @Injectable()
 export class SourceService {
-    constructor(@Inject('DB_MODELS') private db: Record<'Source', Model<SourceDocument>>, private textExtractorService: TextExtractorService) {}
+    constructor(
+        @Inject('DB_MODELS') private db: Record<'Source', Model<SourceDocument>>,
+        private textExtractorService: TextExtractorService
+    ) {}
 
+    // good practice using if else conditions
     async createAsync(
         userId: string,
         createSourceDto: CreateSourceDto,
         file: Express.Multer.File
     ): Promise<ResponseBase> {
-        // const source = await this.db.Source.create(createSourceDto);
-        // if (!source) {
-        //     return { isSuccess: false, message: "source couldn't created" };
-        // }
         const textExtractor = this.textExtractorService.resolveExtractor(file.mimetype);
         const extractedText = await textExtractor.extractText(file.buffer);
         console.log(extractedText);
