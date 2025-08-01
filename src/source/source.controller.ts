@@ -35,19 +35,25 @@ export class SourceController {
         @Body() createSourceDto: CreateSourceDto,
         @UploadedFile() file: Express.Multer.File
     ): Promise<ResponseBase> {
-        const response = await this.sourceService.createAsync(user.sub, createSourceDto, file);
+        const response = await this.sourceService.create(user.sub, createSourceDto, file);
         return response;
     }
 
     @Get('read-all')
     async readAll(): Promise<ReadAllSourcesResponse> {
-        const response = await this.sourceService.readAllAsync();
+        const response = await this.sourceService.readAll();
         return response;
     }
 
     @Get('read-by-id/:id')
     async readById(@Param('id') id: string): Promise<ReadSingleSourceResponse> {
-        const response = await this.sourceService.readByIdAsync(id);
+        const response = await this.sourceService.readById(id);
+        return response;
+    }
+
+    @Get('read-by-user-id/:userId')
+    async readAllByUserId(@Param('userId') userId: string): Promise<ReadAllSourcesResponse> {
+        const response = await this.sourceService.readAllByUserId(userId);
         return response;
     }
 
@@ -56,13 +62,19 @@ export class SourceController {
         @Param('id') id: string,
         @Body() updateSourceDto: UpdateSourceDto
     ): Promise<ResponseBase> {
-        const response = await this.sourceService.updateByIdAsync(id, updateSourceDto);
+        const response = await this.sourceService.updateById(id, updateSourceDto);
         return response;
     }
 
     @Delete('delete-by-id/:id')
     async deleteById(@Param('id') id: string): Promise<ResponseBase> {
-        const response = await this.sourceService.deleteByIdAsync(id);
+        const response = await this.sourceService.deleteById(id);
+        return response;
+    }
+
+    @Post('process-by-id/:id')
+    async processById(@Param('id') id: string): Promise<ResponseBase> {
+        const response = await this.sourceService.processById(id);
         return response;
     }
 }

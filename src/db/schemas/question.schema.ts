@@ -2,8 +2,8 @@ import * as mongoose from 'mongoose';
 
 export const QuestionSchema = new mongoose.Schema(
     {
-        source: { type: mongoose.Schema.Types.ObjectId, ref: 'Source' },
-        processedSource: { type: mongoose.Schema.Types.ObjectId, ref: 'ProcessedSource' },
+        sourceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Source' },
+        processedSourceId: { type: mongoose.Schema.Types.ObjectId, ref: 'ProcessedSource' },
         type: {
             type: String,
             enum: ['mcq', 'trueFalse', 'short', 'openEnded'],

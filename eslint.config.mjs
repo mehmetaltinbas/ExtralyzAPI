@@ -50,8 +50,8 @@ export default tseslint.config(
             '@typescript-eslint/no-unused-vars': 'off', // TS-aware unused vars check
             '@typescript-eslint/no-explicit-any': 'warn', // warn on use of `any` type
             '@typescript-eslint/no-inferrable-types': 'warn', // warn on redundant type annotations
-            // "@typescript-eslint/no-unsafe-member-access": "off",
-            // "@typescript-eslint/no-unsafe-argument": "off",
+            "@typescript-eslint/no-unsafe-member-access": "error",
+            "@typescript-eslint/no-unsafe-argument": "error",
         },
     }
 );

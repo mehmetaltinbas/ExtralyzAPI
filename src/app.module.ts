@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { SourceModule } from './source/source.module';
 import { ProcessedSourceModule } from './processed-source/processed-source.module';
 import { QuestionModule } from './question/question.module';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import { QuestionModule } from './question/question.module';
         SourceModule,
         ProcessedSourceModule,
         QuestionModule,
+        OpenaiModule,
     ],
     controllers: [],
     providers: [],
