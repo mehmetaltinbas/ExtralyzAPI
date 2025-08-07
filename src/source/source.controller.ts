@@ -58,6 +58,7 @@ export class SourceController {
     }
 
     @Patch('update-by-id/:id')
+    @UseGuards(AuthGuard)
     async updateById(
         @Param('id') id: string,
         @Body() updateSourceDto: UpdateSourceDto
@@ -67,12 +68,14 @@ export class SourceController {
     }
 
     @Delete('delete-by-id/:id')
+    @UseGuards(AuthGuard)
     async deleteById(@Param('id') id: string): Promise<ResponseBase> {
         const response = await this.sourceService.deleteById(id);
         return response;
     }
 
     @Post('process-by-id/:id')
+    @UseGuards(AuthGuard)
     async processById(@Param('id') id: string): Promise<ResponseBase> {
         const response = await this.sourceService.processById(id);
         return response;

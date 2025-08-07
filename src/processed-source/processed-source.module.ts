@@ -5,5 +5,6 @@ import { ProcessedSourceService } from './processed-source.service';
 @Module({
     controllers: [ProcessedSourceController],
     providers: [ProcessedSourceService],
+    exports: [ProcessedSourceService],
 })
 export class ProcessedSourceModule {}

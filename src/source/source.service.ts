@@ -7,13 +7,15 @@ import { ReadAllSourcesResponse, ReadSingleSourceResponse } from './types/source
 import { Express } from 'express';
 import { TextExtractorService } from './text-extractor/text-extractor.service';
 import { OpenaiService } from '../openai/openai.service';
+import { ProcessedSourceService } from '../processed-source/processed-source.service';
 
 @Injectable()
 export class SourceService {
     constructor(
         @Inject('DB_MODELS') private db: Record<'Source', Model<SourceDocument>>,
         private textExtractorService: TextExtractorService,
-        private openaiService: OpenaiService
+        private openaiService: OpenaiService,
+        private processedSourceService: ProcessedSourceService
     ) {}
 
     async create(
@@ -61,18 +63,22 @@ export class SourceService {
     }
 
     async updateById(id: string, updateSourceDto: UpdateSourceDto): Promise<ResponseBase> {
-        const source = await this.db.Source.findOneAndUpdate({ _id: id }, updateSourceDto, {
-            new: true,
-        });
-        if (!source) {
+        const updatedSource = await this.db.Source.findOneAndUpdate(
+            { _id: id },
+            updateSourceDto,
+            {
+                new: true,
+            }
+        );
+        if (!updatedSource) {
             return { isSuccess: false, message: 'source not found' };
         }
         return { isSuccess: true, message: 'source updated' };
     }
 
     async deleteById(id: string): Promise<ResponseBase> {
-        const source = await this.db.Source.findOneAndDelete({ _id: id });
-        if (!source) {
+        const deletedSource = await this.db.Source.findOneAndDelete({ _id: id });
+        if (!deletedSource) {
             return { isSuccess: false, message: 'source not found' };
         }
         return { isSuccess: true, message: 'source deleted' };
@@ -80,9 +86,21 @@ export class SourceService {
 
     async processById(id: string): Promise<ResponseBase> {
         const source = await this.db.Source.findById(id);
-        if (!source) return { isSuccess: false, message: `source couldn't read with id: ${id}` };
-        const response = await this.openaiService.generateAbstractiveSummary(source.rawText);
-        console.log(response.completion);
-        return { isSuccess: true, message: 'source processed' };
+        if (!source) {
+            return { isSuccess: false, message: `source couldn't read with id: ${id}` };
+        }
+        const abstractiveSummarizationResponse =
+            await this.openaiService.generateAbstractiveSummary(source.rawText);
+        const processedSourceCreationResponse = await this.processedSourceService.create(
+            source._id,
+            {
+                title: ``,
+                processedText: abstractiveSummarizationResponse.completion,
+            }
+        );
+        if (!processedSourceCreationResponse.isSuccess) {
+            return processedSourceCreationResponse;
+        }
+        return { isSuccess: true, message: 'source processed, processed source created' };
     }
 }
