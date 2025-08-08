@@ -10,5 +10,6 @@ import { ProcessedSourceModule } from '../processed-source/processed-source.modu
     imports: [AuthModule, TextExtractorModule, OpenaiModule, ProcessedSourceModule],
     providers: [SourceService],
     controllers: [SourceController],
+    exports: [SourceService],
 })
 export class SourceModule {}
