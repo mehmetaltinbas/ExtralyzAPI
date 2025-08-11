@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ExerciseDocument } from './types/exercise-interfaces';
 import { Model } from 'mongoose';
 import {
-    ReadAllQuestionsResponse,
-    ReadSingleQuestionResponse,
+    ReadAllExercisesResponse,
+    ReadSingleExerciseResponse,
 } from './types/exercise-responses';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import { CreateMultipleExerciseDto } from './types/exercise-dtos';
@@ -76,7 +76,7 @@ export class ExerciseService {
         return { isSuccess: true, message: 'question created' };
     }
 
-    async readAll(): Promise<ReadAllQuestionsResponse> {
+    async readAll(): Promise<ReadAllExercisesResponse> {
         const exercises = await this.db.Question.find();
         if (exercises.length === 0) {
             return { isSuccess: false, message: 'no question found' };
@@ -84,7 +84,7 @@ export class ExerciseService {
         return { isSuccess: true, message: 'all questions read', exercises };
     }
 
-    async readById(id: string): Promise<ReadSingleQuestionResponse> {
+    async readById(id: string): Promise<ReadSingleExerciseResponse> {
         const exercise = await this.db.Question.findById(id);
         if (!exercise) {
             return { isSuccess: false, message: 'no question found' };
@@ -92,7 +92,7 @@ export class ExerciseService {
         return { isSuccess: true, message: `question read by id: ${id}`, exercise };
     }
 
-    async readAllBySourceId(sourceId: string): Promise<ReadAllQuestionsResponse> {
+    async readAllBySourceId(sourceId: string): Promise<ReadAllExercisesResponse> {
         const exercises = await this.db.Question.find({ sourceId });
         if (!exercises || exercises.length === 0) {
             return { isSuccess: false, message: `no question found that has sourceId: ${sourceId}` };
@@ -100,7 +100,7 @@ export class ExerciseService {
         return { isSuccess: true, message: `all questions read that has sourceId: ${sourceId}`, exercises };
     }
 
-    async readAllByProcessedSourceId(processedSourceId: string): Promise<ReadAllQuestionsResponse> {
+    async readAllByProcessedSourceId(processedSourceId: string): Promise<ReadAllExercisesResponse> {
         const exercises = await this.db.Question.find({ processedSourceId });
         if (!exercises || exercises.length === 0) {
             return { isSuccess: false, message: `no question found that has processedSourceId: ${processedSourceId}` };
