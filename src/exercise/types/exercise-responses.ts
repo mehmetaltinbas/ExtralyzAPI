@@ -1,10 +1,10 @@
 import ResponseBase from '../../shared/interfaces/response-base.interface';
-import { QuestionDocument } from './question-interfaces';
+import { ExerciseDocument } from './exercise-interfaces';
 
 export interface ReadAllQuestionsResponse extends ResponseBase {
-    questions?: QuestionDocument[];
+    exercises?: ExerciseDocument[];
 }
 
 export interface ReadSingleQuestionResponse extends ResponseBase {
-    question?: QuestionDocument;
+    exercise?: ExerciseDocument;
 }

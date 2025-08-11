@@ -1,21 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { QuestionDocument } from './types/question-interfaces';
+import { ExerciseDocument } from './types/exercise-interfaces';
 import { Model } from 'mongoose';
 import {
     ReadAllQuestionsResponse,
     ReadSingleQuestionResponse,
-} from './types/question-responses';
+} from './types/exercise-responses';
 import ResponseBase from '../shared/interfaces/response-base.interface';
-import { CreateMultipleQuestionDto } from './types/question-dtos';
+import { CreateMultipleExerciseDto } from './types/exercise-dtos';
 import { OpenaiService } from '../openai/openai.service';
 import { SourceService } from '../source/source.service';
 import { ProcessedSourceService } from '../processed-source/processed-source.service';
 import { countWords } from 'src/shared/utilities/count-words.utility';
 
 @Injectable()
-export class QuestionService {
+export class ExerciseService {
     constructor(
-        @Inject('DB_MODELS') private db: Record<'Question', Model<QuestionDocument>>,
+        @Inject('DB_MODELS') private db: Record<'Question', Model<ExerciseDocument>>,
         private openaiService: OpenaiService,
         private sourceService: SourceService,
         private processedSourceService: ProcessedSourceService
@@ -23,7 +23,7 @@ export class QuestionService {
 
     async createMultiple(
         sourceId: string,
-        createMultipleQuestionDto: CreateMultipleQuestionDto
+        createMultipleQuestionDto: CreateMultipleExerciseDto
     ): Promise<ResponseBase> {
         let text;
         let intendedQuestionCount;
@@ -56,56 +56,56 @@ export class QuestionService {
                 };
             }
         }
-        const generateQuestionsResponse = await this.openaiService.generateQuestions(
+        const generateExercisesResponse = await this.openaiService.generateExercises(
             text,
             createMultipleQuestionDto.type,
             createMultipleQuestionDto.difficulty,
             createMultipleQuestionDto.intendedQuestionCount
         );
-        if (!generateQuestionsResponse.isSuccess) {
-            return generateQuestionsResponse;
+        if (!generateExercisesResponse.isSuccess) {
+            return generateExercisesResponse;
         }
-        generateQuestionsResponse.questions.forEach((question) => {
+        generateExercisesResponse.exercises.forEach((exercise) => {
             if (isProcessedSource) {
-                question.processedSourceId = sourceId;
+                exercise.processedSourceId = sourceId;
             } else {
-                question.sourceId = sourceId;
+                exercise.sourceId = sourceId;
             }
         });
-        await this.db.Question.insertMany(generateQuestionsResponse.questions);
+        await this.db.Question.insertMany(generateExercisesResponse.exercises);
         return { isSuccess: true, message: 'question created' };
     }
 
     async readAll(): Promise<ReadAllQuestionsResponse> {
-        const questions = await this.db.Question.find();
-        if (questions.length === 0) {
+        const exercises = await this.db.Question.find();
+        if (exercises.length === 0) {
             return { isSuccess: false, message: 'no question found' };
         }
-        return { isSuccess: true, message: 'all questions read', questions };
+        return { isSuccess: true, message: 'all questions read', exercises };
     }
 
     async readById(id: string): Promise<ReadSingleQuestionResponse> {
-        const question = await this.db.Question.findById(id);
-        if (!question) {
+        const exercise = await this.db.Question.findById(id);
+        if (!exercise) {
             return { isSuccess: false, message: 'no question found' };
         }
-        return { isSuccess: true, message: `question read by id: ${id}`, question };
+        return { isSuccess: true, message: `question read by id: ${id}`, exercise };
     }
 
     async readAllBySourceId(sourceId: string): Promise<ReadAllQuestionsResponse> {
-        const questions = await this.db.Question.find({ sourceId });
-        if (!questions || questions.length === 0) {
+        const exercises = await this.db.Question.find({ sourceId });
+        if (!exercises || exercises.length === 0) {
             return { isSuccess: false, message: `no question found that has sourceId: ${sourceId}` };
         }
-        return { isSuccess: true, message: `all questions read that has sourceId: ${sourceId}`, questions };
+        return { isSuccess: true, message: `all questions read that has sourceId: ${sourceId}`, exercises };
     }
 
     async readAllByProcessedSourceId(processedSourceId: string): Promise<ReadAllQuestionsResponse> {
-        const questions = await this.db.Question.find({ processedSourceId });
-        if (!questions || questions.length === 0) {
+        const exercises = await this.db.Question.find({ processedSourceId });
+        if (!exercises || exercises.length === 0) {
             return { isSuccess: false, message: `no question found that has processedSourceId: ${processedSourceId}` };
         }
-        return { isSuccess: true, message: `all questions read that has processedSourceId: ${processedSourceId}`, questions };
+        return { isSuccess: true, message: `all questions read that has processedSourceId: ${processedSourceId}`, exercises };
     }
 
     // async updateById() {
@@ -113,8 +113,8 @@ export class QuestionService {
     // }
 
     async deleteById(id: string): Promise<ResponseBase> {
-        const deletedQuestion = await this.db.Question.findByIdAndDelete(id);
-        if (!deletedQuestion) {
+        const deletedExercise = await this.db.Question.findByIdAndDelete(id);
+        if (!deletedExercise) {
             return { isSuccess: false, message: 'no question found to delete' };
         }
         return { isSuccess: true, message: `question deleted by id: ${id}` };

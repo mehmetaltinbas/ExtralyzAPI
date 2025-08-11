@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CreateMultipleQuestionDto {
+export class CreateMultipleExerciseDto {
     @IsNotEmpty()
     readonly intendedQuestionCount!: number;
 

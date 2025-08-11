@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 
-export const QuestionSchema = new mongoose.Schema(
+export const ExerciseSchema = new mongoose.Schema(
     {
         sourceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Source' },
         processedSourceId: { type: mongoose.Schema.Types.ObjectId, ref: 'ProcessedSource' },
@@ -9,11 +9,11 @@ export const QuestionSchema = new mongoose.Schema(
             enum: ['mcq', 'trueFalse', 'short', 'openEnded'],
             required: true,
         },
-        options: [String], // for 'mcq' and 'trueFalse'
-        correctOptionIndex: Number, // for 'mcq' and 'trueFalse
+        choices: [String], // for 'mcq' and 'trueFalse'
+        correctChoiceIndex: Number, // for 'mcq' and 'trueFalse
         difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
-        questionText: { type: String, required: true },
-        answerText: String,
+        prompt: { type: String, required: true },
+        solution: String,
     },
     { timestamps: true }
 );

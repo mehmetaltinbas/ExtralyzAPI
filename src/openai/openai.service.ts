@@ -3,10 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import {
-    GenerateQuestionsResponse,
+    GenerateExercisesResponse,
     OpenaiCompletionResponse,
-    Question,
 } from './types/openai-responses';
+import { ExerciseDocument } from '../exercise/types/exercise-interfaces';
 
 @Injectable()
 export class OpenaiService {
@@ -46,37 +46,38 @@ export class OpenaiService {
         };
     }
 
-    async generateQuestions(
+    async generateExercises(
         text: string,
         type: string,
         difficulty: string,
-        intendedQuestionCount: number
-    ): Promise<GenerateQuestionsResponse> {
+        intendedExerciseCount: number
+    ): Promise<GenerateExercisesResponse> {
         const completion = await this.openaiClient.chat.completions.create({
             model: this.model,
             messages: [
                 { role: 'developer', content: 'you are a question generation expert' },
                 {
                     role: 'user',
-                    content: `here is a document: "\n${text}\n"\ngenerate clear ${type} type, in ${difficulty} difficulty, ${intendedQuestionCount} number of relevant questions from the provided text to test comprehension\n
+                    content: `here is a document: "\n${text}\n"\ngenerate clear ${type} type, in ${difficulty} difficulty, ${intendedExerciseCount} number of relevant questions from the provided text to test comprehension\n
                         your output should match one of this template depending on the type of the question:
-                        for mcq (5 options): [ { questionText: string, options: [ string, string, string, string, string], correctOptionIndex: number }, ... ]\n
-                        for trueFalse: [ { questionText: string, options: [ true, false], correctOptionIndex: number }, ... ]\n
-                        for short: [ { questionText: string, answerText: string}, ... ]\n
-                        for openEnded: [ { questionText: string, answerText: string}, ... ]\n
-                        Return only valid JSON. Do not include extra text or formatting.`,
+                        for mcq (5 options): [ { prompt: string, choices: [ string, string, string, string, string], correctChoiceIndex: number }, ... ]\n
+                        for trueFalse: [ { prompt: string, choices: [ true, false], correctChoicesIndex: number }, ... ]\n
+                        for short: [ { prompt: string, solution: string}, ... ]\n
+                        for openEnded: [ { prompt: string, solution: string}, ... ]\n
+                        Return only valid JSON. Do not include extra text or formatting.\n
+                        prompt means the questionText (the stem)`,
                 },
             ],
         });
-        const questions = JSON.parse(completion.choices[0].message.content!) as Question[];
-        questions.forEach((question) => {
+        const exercises = JSON.parse(completion.choices[0].message.content!) as ExerciseDocument[];
+        exercises.forEach((question) => {
             question.type = type;
             question.difficulty = difficulty;
         });
         return {
             isSuccess: true,
             message: 'completion is done',
-            questions,
+            exercises
         };
     }
 }

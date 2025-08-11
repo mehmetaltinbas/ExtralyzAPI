@@ -10,23 +10,23 @@ import {
     HttpCode,
     UseGuards,
 } from '@nestjs/common';
-import { QuestionService } from './question.service';
+import { ExerciseService } from './exercise.service';
 import ResponseBase from '../shared/interfaces/response-base.interface';
-import { CreateMultipleQuestionDto } from './types/question-dtos';
-import { ReadAllQuestionsResponse } from './types/question-responses';
+import { CreateMultipleExerciseDto } from './types/exercise-dtos';
+import { ReadAllQuestionsResponse } from './types/exercise-responses';
 
-@Controller('question')
-export class QuestionController {
-    constructor(private questionService: QuestionService) {}
+@Controller('exercise')
+export class ExerciseController {
+    constructor(private exerciseService: ExerciseService) {}
 
     @Post('create-multiple/:sourceId')
     async createMultiple(
         @Param('sourceId') sourceId: string,
-        @Body() createMultipleQuestionDto: CreateMultipleQuestionDto
+        @Body() createMultipleExerciseDto: CreateMultipleExerciseDto
     ): Promise<ResponseBase> {
-        const response = await this.questionService.createMultiple(
+        const response = await this.exerciseService.createMultiple(
             sourceId,
-            createMultipleQuestionDto
+            createMultipleExerciseDto
         );
         return response;
     }
@@ -45,13 +45,13 @@ export class QuestionController {
 
     @Get('read-all-by-source-id/:sourceId')
     async readAllBySourceId(@Param('sourceId') sourceId: string): Promise<ReadAllQuestionsResponse> {
-        const response = await this.questionService.readAllBySourceId(sourceId);
+        const response = await this.exerciseService.readAllBySourceId(sourceId);
         return response;
     }
 
     @Get('read-all-by-processed-source-id/:processedSourceId')
     async readAllByProcessedSourceId(@Param('processedSourceId') processedSourceId: string): Promise<ReadAllQuestionsResponse> {
-        const response = await this.questionService.readAllByProcessedSourceId(processedSourceId);
+        const response = await this.exerciseService.readAllByProcessedSourceId(processedSourceId);
         return response;
     }
 

@@ -2,7 +2,7 @@ import { Mongoose } from 'mongoose';
 import { UserSchema } from './schemas/user.schema';
 import { SourceSchema } from './schemas/source.schema';
 import { ProcessedSourceSchema } from './schemas/processed-source.schema';
-import { QuestionSchema } from './schemas/question.schema';
+import { ExerciseSchema } from './schemas/exercise.schema';
 
 let models: Record<string, Mongoose['Model']>;
 
@@ -14,7 +14,7 @@ export const dbModelsProvider = {
             User: mongoose.model('User', UserSchema),
             Source: mongoose.model('Source', SourceSchema),
             ProcessedSource: mongoose.model('ProcessedSource', ProcessedSourceSchema),
-            Question: mongoose.model('Question', QuestionSchema),
+            Question: mongoose.model('Exercise', ExerciseSchema),
         };
         return models;
     },

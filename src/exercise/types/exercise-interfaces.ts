@@ -1,13 +1,13 @@
 import { Document as MongooseDocument } from 'mongoose';
 
-export interface QuestionDocument extends MongooseDocument {
+export interface ExerciseDocument extends MongooseDocument {
     _id: string;
     sourceId: string;
     processedSourceId: string;
     type: string;
-    options: string[];
-    correctOptionIndex: number;
+    choices: string[];
+    correctChoiceIndex: number;
     difficulty: string;
-    questionText: string;
-    answerText: string;
+    prompt: string;
+    solution: string;
 }
