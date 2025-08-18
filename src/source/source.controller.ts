@@ -39,9 +39,10 @@ export class SourceController {
         return response;
     }
 
+    @UseGuards(AuthGuard)
     @Get('read-all')
-    async readAll(): Promise<ReadAllSourcesResponse> {
-        const response = await this.sourceService.readAll();
+    async readAll(@User() user: JwtPayload): Promise<ReadAllSourcesResponse> {
+        const response = await this.sourceService.readAll(user.sub);
         return response;
     }
 
@@ -51,7 +52,7 @@ export class SourceController {
         return response;
     }
 
-    @Get('read-by-user-id/:userId')
+    @Get('read-all-by-user-id/:userId')
     async readAllByUserId(@Param('userId') userId: string): Promise<ReadAllSourcesResponse> {
         const response = await this.sourceService.readAllByUserId(userId);
         return response;

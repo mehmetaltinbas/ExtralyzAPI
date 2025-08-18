@@ -13,7 +13,7 @@ import {
 import { ExerciseService } from './exercise.service';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import { CreateMultipleExerciseDto } from './types/exercise-dtos';
-import { ReadAllQuestionsResponse } from './types/exercise-responses';
+import { ReadAllExercisesResponse } from './types/exercise-responses';
 
 @Controller('exercise')
 export class ExerciseController {
@@ -44,14 +44,19 @@ export class ExerciseController {
     }
 
     @Get('read-all-by-source-id/:sourceId')
-    async readAllBySourceId(@Param('sourceId') sourceId: string): Promise<ReadAllQuestionsResponse> {
+    async readAllBySourceId(
+        @Param('sourceId') sourceId: string
+    ): Promise<ReadAllExercisesResponse> {
         const response = await this.exerciseService.readAllBySourceId(sourceId);
         return response;
     }
 
     @Get('read-all-by-processed-source-id/:processedSourceId')
-    async readAllByProcessedSourceId(@Param('processedSourceId') processedSourceId: string): Promise<ReadAllQuestionsResponse> {
-        const response = await this.exerciseService.readAllByProcessedSourceId(processedSourceId);
+    async readAllByProcessedSourceId(
+        @Param('processedSourceId') processedSourceId: string
+    ): Promise<ReadAllExercisesResponse> {
+        const response =
+            await this.exerciseService.readAllByProcessedSourceId(processedSourceId);
         return response;
     }
 

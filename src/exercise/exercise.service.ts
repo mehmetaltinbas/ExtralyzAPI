@@ -95,17 +95,33 @@ export class ExerciseService {
     async readAllBySourceId(sourceId: string): Promise<ReadAllExercisesResponse> {
         const exercises = await this.db.Question.find({ sourceId });
         if (!exercises || exercises.length === 0) {
-            return { isSuccess: false, message: `no question found that has sourceId: ${sourceId}` };
+            return {
+                isSuccess: false,
+                message: `no question found that has sourceId: ${sourceId}`,
+            };
         }
-        return { isSuccess: true, message: `all questions read that has sourceId: ${sourceId}`, exercises };
+        return {
+            isSuccess: true,
+            message: `all questions read that has sourceId: ${sourceId}`,
+            exercises,
+        };
     }
 
-    async readAllByProcessedSourceId(processedSourceId: string): Promise<ReadAllExercisesResponse> {
+    async readAllByProcessedSourceId(
+        processedSourceId: string
+    ): Promise<ReadAllExercisesResponse> {
         const exercises = await this.db.Question.find({ processedSourceId });
         if (!exercises || exercises.length === 0) {
-            return { isSuccess: false, message: `no question found that has processedSourceId: ${processedSourceId}` };
+            return {
+                isSuccess: false,
+                message: `no question found that has processedSourceId: ${processedSourceId}`,
+            };
         }
-        return { isSuccess: true, message: `all questions read that has processedSourceId: ${processedSourceId}`, exercises };
+        return {
+            isSuccess: true,
+            message: `all questions read that has processedSourceId: ${processedSourceId}`,
+            exercises,
+        };
     }
 
     // async updateById() {

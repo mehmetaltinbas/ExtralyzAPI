@@ -34,8 +34,8 @@ export class SourceService {
         return { isSuccess: true, message: 'source created' };
     }
 
-    async readAll(): Promise<ReadAllSourcesResponse> {
-        const sources = await this.db.Source.find();
+    async readAll(userId: string): Promise<ReadAllSourcesResponse> {
+        const sources = await this.db.Source.find({ userId });
         if (sources.length === 0) {
             return { isSuccess: false, message: 'no source found' };
         }

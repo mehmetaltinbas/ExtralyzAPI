@@ -2,10 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import ResponseBase from '../shared/interfaces/response-base.interface';
-import {
-    GenerateExercisesResponse,
-    OpenaiCompletionResponse,
-} from './types/openai-responses';
+import { GenerateExercisesResponse, OpenaiCompletionResponse } from './types/openai-responses';
 import { ExerciseDocument } from '../exercise/types/exercise-interfaces';
 
 @Injectable()
@@ -69,7 +66,9 @@ export class OpenaiService {
                 },
             ],
         });
-        const exercises = JSON.parse(completion.choices[0].message.content!) as ExerciseDocument[];
+        const exercises = JSON.parse(
+            completion.choices[0].message.content!
+        ) as ExerciseDocument[];
         exercises.forEach((question) => {
             question.type = type;
             question.difficulty = difficulty;
@@ -77,7 +76,7 @@ export class OpenaiService {
         return {
             isSuccess: true,
             message: 'completion is done',
-            exercises
+            exercises,
         };
     }
 }
