@@ -9,6 +9,8 @@ import { countWords } from '../shared/utilities/count-words.utility';
 import { ExerciseService } from '../exercise/exercise.service';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import { CreateExerciseDto } from '../exercise/types/dto/create-exercise.dto';
+import { ReadAllExerciseSetsResponse } from './types/response/read-all-exercise-sets.response';
+import { ProcessedSourceDocument } from '../processed-source/types/processed-source-interfaces';
 
 @Injectable()
 export class ExerciseSetService {
@@ -90,5 +92,38 @@ export class ExerciseSetService {
             isSuccess: true,
             message: `exercise set created, type: ${exerciseSet.type}, difficulty: ${exerciseSet.difficulty}, exercise count: ${exerciseSet.count}`,
         };
+    }
+
+    async readAllByUserId(userId: string): Promise<ReadAllExerciseSetsResponse> {
+        const response = await this.sourceService.readAllByUserId(userId);
+        if (!response.sources || response.sources.length === 0) {
+            return {
+                isSuccess: false,
+                message:
+                    'No sources associated with the given userId, thus no exercise sets can exist',
+            };
+        }
+        const sourceIds = response.sources.map((s) => s._id);
+
+        const processedSourcesResponses = await Promise.all(
+            response.sources.map((source) =>
+                this.processedSourceService.readAllBySourceId(source._id)
+            )
+        );
+        for (const res of processedSourcesResponses) {
+            if (res.processedSources) {
+                sourceIds.push(...res.processedSources.map((ps) => ps._id));
+            }
+        }
+
+        const exerciseSets = await this.db.ExerciseSet.find({
+            sourceId: { $in: sourceIds },
+        });
+
+        if (exerciseSets.length === 0) {
+            return { isSuccess: false, message: 'No exercises found' };
+        }
+
+        return { isSuccess: true, message: 'All exercise sets read', exerciseSets };
     }
 }
