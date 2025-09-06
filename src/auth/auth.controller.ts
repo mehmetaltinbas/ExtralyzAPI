@@ -21,7 +21,10 @@ import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService, private configService: ConfigService) {}
+    constructor(
+        private authService: AuthService,
+        private configService: ConfigService
+    ) {}
 
     @HttpCode(200)
     @Post('sign-in')
@@ -42,7 +45,10 @@ export class AuthController {
                 sameSite: 'lax',
             });
         } else if (!jwtCookieName) {
-            return res.json({ isSuccess: false, message: 'no jwt cookie name provided as env variable' });
+            return res.json({
+                isSuccess: false,
+                message: 'no jwt cookie name provided as env variable',
+            });
         }
         return res.json({ isSuccess: response.isSuccess, message: response.message });
     }

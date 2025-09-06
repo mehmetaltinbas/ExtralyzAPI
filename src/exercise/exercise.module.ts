@@ -9,5 +9,6 @@ import { ProcessedSourceModule } from '../processed-source/processed-source.modu
     imports: [OpenaiModule, SourceModule, ProcessedSourceModule],
     controllers: [ExerciseController],
     providers: [ExerciseService],
+    exports: [ExerciseService],
 })
-export class QuestionModule {}
+export class ExerciseModule {}

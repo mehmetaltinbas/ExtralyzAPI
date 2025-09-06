@@ -6,8 +6,9 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { SourceModule } from './source/source.module';
 import { ProcessedSourceModule } from './processed-source/processed-source.module';
-import { QuestionModule } from './exercise/exercise.module';
+import { ExerciseModule } from './exercise/exercise.module';
 import { OpenaiModule } from './openai/openai.module';
+import { ExerciseSetModule } from './exercise-set/exercise-set.module';
 
 @Module({
     imports: [
@@ -20,7 +21,8 @@ import { OpenaiModule } from './openai/openai.module';
         AuthModule,
         SourceModule,
         ProcessedSourceModule,
-        QuestionModule,
+        ExerciseSetModule,
+        ExerciseModule,
         OpenaiModule,
     ],
     controllers: [],

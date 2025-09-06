@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import { GenerateExercisesResponse, OpenaiCompletionResponse } from './types/openai-responses';
-import { ExerciseDocument } from '../exercise/types/exercise-interfaces';
+import { ExerciseDocument } from '../exercise/types/exercise-document.interface';
 
 @Injectable()
 export class OpenaiService {

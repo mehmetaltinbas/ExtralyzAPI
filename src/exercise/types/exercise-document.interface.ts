@@ -2,8 +2,7 @@ import { Document as MongooseDocument } from 'mongoose';
 
 export interface ExerciseDocument extends MongooseDocument {
     _id: string;
-    sourceId: string;
-    processedSourceId: string;
+    exerciseSetId: string;
     type: string;
     choices: string[];
     correctChoiceIndex: number;

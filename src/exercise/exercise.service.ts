@@ -1,16 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ExerciseDocument } from './types/exercise-interfaces';
+import { ExerciseDocument } from './types/exercise-document.interface';
 import { Model } from 'mongoose';
-import {
-    ReadAllExercisesResponse,
-    ReadSingleExerciseResponse,
-} from './types/exercise-responses';
+import { ReadAllExercisesResponse } from './types/response/read-all-exercises.response';
+import { ReadSingleExerciseResponse } from './types/response/read-single-exercise.response';
 import ResponseBase from '../shared/interfaces/response-base.interface';
-import { CreateMultipleExerciseDto } from './types/exercise-dtos';
+import { CreateExerciseDto } from './types/dto/create-exercise.dto';
 import { OpenaiService } from '../openai/openai.service';
 import { SourceService } from '../source/source.service';
 import { ProcessedSourceService } from '../processed-source/processed-source.service';
-import { countWords } from 'src/shared/utilities/count-words.utility';
+import { countWords } from '../shared/utilities/count-words.utility';
 
 @Injectable()
 export class ExerciseService {
@@ -21,58 +19,17 @@ export class ExerciseService {
         private processedSourceService: ProcessedSourceService
     ) {}
 
-    async createMultiple(
-        sourceId: string,
-        createMultipleExerciseDto: CreateMultipleExerciseDto
+    async create(
+        exerciseSetId: string,
+        createExerciseDto: CreateExerciseDto
     ): Promise<ResponseBase> {
-        let text;
-        let intendedQuestionCount;
-        let isProcessedSource;
-        const readSingleSourceResponse = await this.sourceService.readById(sourceId);
-        if (readSingleSourceResponse.isSuccess && readSingleSourceResponse.source) {
-            text = readSingleSourceResponse.source.rawText;
-            intendedQuestionCount = Math.floor(
-                countWords(readSingleSourceResponse.source.rawText) / 100
-            );
-            isProcessedSource = false;
-        } else {
-            const readSingleProcessedSourceResponse =
-                await this.processedSourceService.readById(sourceId);
-            if (
-                readSingleProcessedSourceResponse.isSuccess &&
-                readSingleProcessedSourceResponse.processedSource
-            ) {
-                text = readSingleProcessedSourceResponse.processedSource.processedText;
-                intendedQuestionCount = Math.floor(
-                    countWords(
-                        readSingleProcessedSourceResponse.processedSource.processedText
-                    ) / 100
-                );
-                isProcessedSource = true;
-            } else {
-                return {
-                    isSuccess: false,
-                    message: 'no source or processed source found by given id',
-                };
-            }
-        }
-        const generateExercisesResponse = await this.openaiService.generateExercises(
-            text,
-            createMultipleExerciseDto.type,
-            createMultipleExerciseDto.difficulty,
-            createMultipleExerciseDto.intendedExerciseCount
-        );
-        if (!generateExercisesResponse.isSuccess) {
-            return generateExercisesResponse;
-        }
-        generateExercisesResponse.exercises.forEach((exercise) => {
-            if (isProcessedSource) {
-                exercise.processedSourceId = sourceId;
-            } else {
-                exercise.sourceId = sourceId;
-            }
+        const createdExercise = await this.db.Exercise.create({
+            exerciseSetId,
+            ...createExerciseDto,
         });
-        await this.db.Exercise.insertMany(generateExercisesResponse.exercises);
+        if (!createdExercise) {
+            return { isSuccess: false, message: "exercise couldn't created" };
+        }
         return { isSuccess: true, message: 'exercises created' };
     }
 

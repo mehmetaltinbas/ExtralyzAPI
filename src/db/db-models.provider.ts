@@ -2,6 +2,7 @@ import { Mongoose } from 'mongoose';
 import { UserSchema } from './schemas/user.schema';
 import { SourceSchema } from './schemas/source.schema';
 import { ProcessedSourceSchema } from './schemas/processed-source.schema';
+import { ExerciseSetSchema } from './schemas/exercise-set.schema';
 import { ExerciseSchema } from './schemas/exercise.schema';
 
 let models: Record<string, Mongoose['Model']>;
@@ -14,6 +15,7 @@ export const dbModelsProvider = {
             User: mongoose.model('User', UserSchema),
             Source: mongoose.model('Source', SourceSchema),
             ProcessedSource: mongoose.model('ProcessedSource', ProcessedSourceSchema),
+            ExerciseSet: mongoose.model('ExerciseSet', ExerciseSetSchema),
             Exercise: mongoose.model('Exercise', ExerciseSchema),
         };
         return models;

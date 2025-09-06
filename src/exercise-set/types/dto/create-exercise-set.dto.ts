@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class CreateMultipleExerciseDto {
+export class CreateExerciseSetDto {
     @IsNotEmpty()
-    readonly intendedExerciseCount!: number;
+    readonly count!: number;
 
     @IsNotEmpty()
     readonly type!: string;
