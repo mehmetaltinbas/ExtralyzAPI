@@ -15,7 +15,7 @@ import { countWords } from 'src/shared/utilities/count-words.utility';
 @Injectable()
 export class ExerciseService {
     constructor(
-        @Inject('DB_MODELS') private db: Record<'Question', Model<ExerciseDocument>>,
+        @Inject('DB_MODELS') private db: Record<'Exercise', Model<ExerciseDocument>>,
         private openaiService: OpenaiService,
         private sourceService: SourceService,
         private processedSourceService: ProcessedSourceService
@@ -23,7 +23,7 @@ export class ExerciseService {
 
     async createMultiple(
         sourceId: string,
-        createMultipleQuestionDto: CreateMultipleExerciseDto
+        createMultipleExerciseDto: CreateMultipleExerciseDto
     ): Promise<ResponseBase> {
         let text;
         let intendedQuestionCount;
@@ -58,9 +58,9 @@ export class ExerciseService {
         }
         const generateExercisesResponse = await this.openaiService.generateExercises(
             text,
-            createMultipleQuestionDto.type,
-            createMultipleQuestionDto.difficulty,
-            createMultipleQuestionDto.intendedQuestionCount
+            createMultipleExerciseDto.type,
+            createMultipleExerciseDto.difficulty,
+            createMultipleExerciseDto.intendedExerciseCount
         );
         if (!generateExercisesResponse.isSuccess) {
             return generateExercisesResponse;
@@ -72,37 +72,37 @@ export class ExerciseService {
                 exercise.sourceId = sourceId;
             }
         });
-        await this.db.Question.insertMany(generateExercisesResponse.exercises);
-        return { isSuccess: true, message: 'question created' };
+        await this.db.Exercise.insertMany(generateExercisesResponse.exercises);
+        return { isSuccess: true, message: 'exercises created' };
     }
 
     async readAll(): Promise<ReadAllExercisesResponse> {
-        const exercises = await this.db.Question.find();
+        const exercises = await this.db.Exercise.find();
         if (exercises.length === 0) {
-            return { isSuccess: false, message: 'no question found' };
+            return { isSuccess: false, message: 'no exercise found' };
         }
-        return { isSuccess: true, message: 'all questions read', exercises };
+        return { isSuccess: true, message: 'all exercises read', exercises };
     }
 
     async readById(id: string): Promise<ReadSingleExerciseResponse> {
-        const exercise = await this.db.Question.findById(id);
+        const exercise = await this.db.Exercise.findById(id);
         if (!exercise) {
-            return { isSuccess: false, message: 'no question found' };
+            return { isSuccess: false, message: 'no exercise found' };
         }
-        return { isSuccess: true, message: `question read by id: ${id}`, exercise };
+        return { isSuccess: true, message: `exercise read by id: ${id}`, exercise };
     }
 
     async readAllBySourceId(sourceId: string): Promise<ReadAllExercisesResponse> {
-        const exercises = await this.db.Question.find({ sourceId });
+        const exercises = await this.db.Exercise.find({ sourceId });
         if (!exercises || exercises.length === 0) {
             return {
                 isSuccess: false,
-                message: `no question found that has sourceId: ${sourceId}`,
+                message: `no exercise found that has sourceId: ${sourceId}`,
             };
         }
         return {
             isSuccess: true,
-            message: `all questions read that has sourceId: ${sourceId}`,
+            message: `all exercises read that has sourceId: ${sourceId}`,
             exercises,
         };
     }
@@ -110,16 +110,16 @@ export class ExerciseService {
     async readAllByProcessedSourceId(
         processedSourceId: string
     ): Promise<ReadAllExercisesResponse> {
-        const exercises = await this.db.Question.find({ processedSourceId });
+        const exercises = await this.db.Exercise.find({ processedSourceId });
         if (!exercises || exercises.length === 0) {
             return {
                 isSuccess: false,
-                message: `no question found that has processedSourceId: ${processedSourceId}`,
+                message: `no exercise found that has processedSourceId: ${processedSourceId}`,
             };
         }
         return {
             isSuccess: true,
-            message: `all questions read that has processedSourceId: ${processedSourceId}`,
+            message: `all exercises read that has processedSourceId: ${processedSourceId}`,
             exercises,
         };
     }
@@ -129,10 +129,10 @@ export class ExerciseService {
     // }
 
     async deleteById(id: string): Promise<ResponseBase> {
-        const deletedExercise = await this.db.Question.findByIdAndDelete(id);
+        const deletedExercise = await this.db.Exercise.findByIdAndDelete(id);
         if (!deletedExercise) {
-            return { isSuccess: false, message: 'no question found to delete' };
+            return { isSuccess: false, message: 'no exercise found to delete' };
         }
-        return { isSuccess: true, message: `question deleted by id: ${id}` };
+        return { isSuccess: true, message: `exercise deleted by id: ${id}` };
     }
 }

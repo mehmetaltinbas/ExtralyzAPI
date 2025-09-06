@@ -14,7 +14,7 @@ export const dbModelsProvider = {
             User: mongoose.model('User', UserSchema),
             Source: mongoose.model('Source', SourceSchema),
             ProcessedSource: mongoose.model('ProcessedSource', ProcessedSourceSchema),
-            Question: mongoose.model('Exercise', ExerciseSchema),
+            Exercise: mongoose.model('Exercise', ExerciseSchema),
         };
         return models;
     },

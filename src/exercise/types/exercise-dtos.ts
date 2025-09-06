@@ -2,7 +2,7 @@ import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateMultipleExerciseDto {
     @IsNotEmpty()
-    readonly intendedQuestionCount!: number;
+    readonly intendedExerciseCount!: number;
 
     @IsNotEmpty()
     readonly type!: string;

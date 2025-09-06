@@ -33,13 +33,13 @@ export class ExerciseController {
 
     @Get('read-all')
     async readAll(): Promise<ResponseBase> {
-        const response = await this.readAll();
+        const response = await this.exerciseService.readAll();
         return response;
     }
 
     @Get('read-by-id/:id')
     async readById(@Param('id') id: string): Promise<ResponseBase> {
-        const response = await this.readById(id);
+        const response = await this.exerciseService.readById(id);
         return response;
     }
 
@@ -67,7 +67,7 @@ export class ExerciseController {
 
     @Delete('delete-by-id/:id')
     async deleteById(@Param('id') id: string): Promise<ResponseBase> {
-        const response = await this.deleteById(id);
+        const response = await this.exerciseService.deleteById(id);
         return response;
     }
 }
