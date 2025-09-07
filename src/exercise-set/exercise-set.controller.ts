@@ -29,4 +29,11 @@ export class ExerciseSetController {
         const response = await this.exerciseSetService.readAllByUserId(user.sub);
         return response;
     }
+
+    @Get('read-all-by-user-id-grouped-by-sources')
+    @UseGuards(AuthGuard)
+    async readAllByUserIdGroupedBySources(@User() user: JwtPayload): Promise<ReadAllExerciseSetsResponse> {
+        const response = await this.exerciseSetService.readAllByUserIdGroupedBySources(user.sub);
+        return response;
+    }
 }

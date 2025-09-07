@@ -11,6 +11,9 @@ import ResponseBase from '../shared/interfaces/response-base.interface';
 import { CreateExerciseDto } from '../exercise/types/dto/create-exercise.dto';
 import { ReadAllExerciseSetsResponse } from './types/response/read-all-exercise-sets.response';
 import { ProcessedSourceDocument } from '../processed-source/types/processed-source-interfaces';
+import { ExtendedSourceDocument } from '../source/types/extended-source-document.interface';
+import { ReadAllExerciseSetsGroupedBySources } from './types/response/read-all-exercise-sets-grouped-by-sources.response';
+import { ExtendedProcessedSourceDocument } from '../processed-source/types/extended-processed-source-document.interface';
 
 @Injectable()
 export class ExerciseSetService {
@@ -125,5 +128,52 @@ export class ExerciseSetService {
         }
 
         return { isSuccess: true, message: 'All exercise sets read', exerciseSets };
+    }
+
+    async readAllByUserIdGroupedBySources(userId: string): Promise<ReadAllExerciseSetsGroupedBySources> {
+        const response = await this.sourceService.readAllByUserId(userId);
+        if (!response.sources || response.sources.length === 0) {
+            return {
+                isSuccess: false,
+                message:
+                    'No sources associated with the given userId, thus no exercise sets can exist',
+            };
+        }
+
+        let sources = [];
+        for (const source of response.sources) {
+            const exerciseSetsOfSource = await this.db.ExerciseSet.find({
+                sourceId: source._id,
+            });
+            const response = await this.processedSourceService.readAllBySourceId(source._id);
+            if (response.processedSources && response.processedSources.length !== 0) {
+                let processedSources = [];
+                for (const processedSource of response.processedSources) {
+                    const exerciseSetsOfProcessedSource = await this.db.ExerciseSet.find({
+                        sourceId: processedSource._id,
+                    });
+                    const extendedProcessedSource: ExtendedProcessedSourceDocument = {
+                        ...(processedSource.toObject() as Omit<ExtendedProcessedSourceDocument, 'exerciseSets'>),
+                        exerciseSets: exerciseSetsOfProcessedSource,
+                    };
+                    processedSources.push(extendedProcessedSource);
+                }
+                const extendedSource: ExtendedSourceDocument = {
+                    ...(source.toObject() as Omit<ExtendedSourceDocument, 'exerciseSets'>),
+                    exerciseSets: exerciseSetsOfSource,
+                    processedSources: processedSources,
+                };
+                sources.push(extendedSource);
+            } else {
+                const extendedSource: ExtendedSourceDocument = {
+                    ...(source.toObject() as Omit<ExtendedSourceDocument, 'exerciseSets'>),
+                    exerciseSets: exerciseSetsOfSource,
+                    processedSources: [],
+                };
+                sources.push(extendedSource);
+            }
+        }
+
+        return { isSuccess: true, message: 'All exercise sets read', sources };
     }
 }
