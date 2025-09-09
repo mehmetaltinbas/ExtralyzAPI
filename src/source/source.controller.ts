@@ -52,10 +52,10 @@ export class SourceController {
         return response;
     }
 
-    @Get('read-all-by-user-id/:userId')
+    @Get('read-all-by-user-id')
     @UseGuards(AuthGuard)
-    async readAllByUserId(@Param('userId') userId: string): Promise<ReadAllSourcesResponse> {
-        const response = await this.sourceService.readAllByUserId(userId);
+    async readAllByUserId(@User() user: JwtPayload): Promise<ReadAllSourcesResponse> {
+        const response = await this.sourceService.readAllByUserId(user.sub);
         return response;
     }
 
