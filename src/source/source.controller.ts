@@ -53,6 +53,7 @@ export class SourceController {
     }
 
     @Get('read-all-by-user-id/:userId')
+    @UseGuards(AuthGuard)
     async readAllByUserId(@Param('userId') userId: string): Promise<ReadAllSourcesResponse> {
         const response = await this.sourceService.readAllByUserId(userId);
         return response;

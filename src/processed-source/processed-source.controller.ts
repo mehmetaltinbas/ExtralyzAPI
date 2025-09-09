@@ -20,6 +20,9 @@ import {
     ReadAllProcessedSourcesResponse,
     ReadSingleProcessedSourceResponse,
 } from './types/processed-source-responses';
+import { AuthGuard } from '../auth/auth.guard';
+import User from '../shared/custom-decorators/user.decorator';
+import JwtPayload from '../auth/types/jwt-payload.interface';
 
 @Controller('processed-source')
 export class ProcessedSourceController {
@@ -40,6 +43,13 @@ export class ProcessedSourceController {
     @Get('read-by-id/:id')
     async readById(@Param('id') id: string): Promise<ReadSingleProcessedSourceResponse> {
         const response = await this.processedSourceService.readById(id);
+        return response;
+    }
+
+    @Get('read-all-by-user-id')
+    @UseGuards(AuthGuard)
+    async readAllByUserId(@User() user: JwtPayload): Promise<ReadAllProcessedSourcesResponse> {
+        const response = await this.processedSourceService.readAllByUserId(user.sub);
         return response;
     }
 

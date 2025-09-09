@@ -7,6 +7,7 @@ import { CreateExerciseSetDto } from './types/dto/create-exercise-set.dto';
 import { ReadAllExerciseSetsResponse } from './types/response/read-all-exercise-sets.response';
 import User from '../shared/custom-decorators/user.decorator';
 import JwtPayload from '../auth/types/jwt-payload.interface';
+import { ReadAllExerciseSetsGroupedBySources } from './types/response/read-all-exercise-sets-grouped-by-sources.response';
 
 @Controller('exercise-set')
 export class ExerciseSetController {
@@ -32,7 +33,7 @@ export class ExerciseSetController {
 
     @Get('read-all-by-user-id-grouped-by-sources')
     @UseGuards(AuthGuard)
-    async readAllByUserIdGroupedBySources(@User() user: JwtPayload): Promise<ReadAllExerciseSetsResponse> {
+    async readAllByUserIdGroupedBySources(@User() user: JwtPayload): Promise<ReadAllExerciseSetsGroupedBySources> {
         const response = await this.exerciseSetService.readAllByUserIdGroupedBySources(user.sub);
         return response;
     }
