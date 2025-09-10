@@ -8,6 +8,7 @@ import { ReadAllExerciseSetsResponse } from './types/response/read-all-exercise-
 import User from '../shared/custom-decorators/user.decorator';
 import JwtPayload from '../auth/types/jwt-payload.interface';
 import { ReadAllExerciseSetsGroupedBySources } from './types/response/read-all-exercise-sets-grouped-by-sources.response';
+import { ReadSingleExerciseSetResponse } from './types/response/read-single-exercise-set.response';
 
 @Controller('exercise-set')
 export class ExerciseSetController {
@@ -21,6 +22,13 @@ export class ExerciseSetController {
     ): Promise<ResponseBase> {
         console.log('exercise set hit!');
         const response = await this.exerciseSetService.create(sourceId, createExerciseSetDto);
+        return response;
+    }
+
+    @Get('read-by-id/:id')
+    @UseGuards(AuthGuard)
+    async readById(@Param('id') id: string): Promise<ReadSingleExerciseSetResponse> {
+        const response = this.exerciseSetService.readById(id);
         return response;
     }
 

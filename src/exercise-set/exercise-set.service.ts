@@ -14,6 +14,7 @@ import { ProcessedSourceDocument } from '../processed-source/types/processed-sou
 import { ExtendedSourceDocument } from '../source/types/extended-source-document.interface';
 import { ReadAllExerciseSetsGroupedBySources } from './types/response/read-all-exercise-sets-grouped-by-sources.response';
 import { ExtendedProcessedSourceDocument } from '../processed-source/types/extended-processed-source-document.interface';
+import { ReadSingleExerciseSetResponse } from './types/response/read-single-exercise-set.response';
 
 @Injectable()
 export class ExerciseSetService {
@@ -175,5 +176,17 @@ export class ExerciseSetService {
         }
 
         return { isSuccess: true, message: 'All exercise sets read', sources };
+    }
+
+    async readById(id: string): Promise<ReadSingleExerciseSetResponse> {
+        const exerciseSet = await this.db.ExerciseSet.findById(id);
+        if (!exerciseSet) {
+            return { isSuccess: false, message: `no exerciseSet found by id ${id}` };
+        }
+        return {
+            isSuccess: true,
+            message: `exerciseSet read by id ${id}`,
+            exerciseSet,
+        };
     }
 }
