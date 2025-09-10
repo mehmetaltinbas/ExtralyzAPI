@@ -7,4 +7,5 @@ export interface ExerciseSetDocument extends MongooseDocument {
     type: string;
     difficulty: string;
     count: number;
+    title: string;
 }

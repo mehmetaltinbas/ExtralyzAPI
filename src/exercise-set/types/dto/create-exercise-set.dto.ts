@@ -1,6 +1,9 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateExerciseSetDto {
+    @IsOptional()
+    readonly title?: string;
+
     @IsNotEmpty()
     readonly count!: number;
 

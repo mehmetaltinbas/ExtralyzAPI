@@ -49,34 +49,19 @@ export class ExerciseService {
         return { isSuccess: true, message: `exercise read by id: ${id}`, exercise };
     }
 
-    async readAllBySourceId(sourceId: string): Promise<ReadAllExercisesResponse> {
-        const exercises = await this.db.Exercise.find({ sourceId });
-        if (!exercises || exercises.length === 0) {
-            return {
-                isSuccess: false,
-                message: `no exercise found that has sourceId: ${sourceId}`,
-            };
-        }
-        return {
-            isSuccess: true,
-            message: `all exercises read that has sourceId: ${sourceId}`,
-            exercises,
-        };
-    }
-
-    async readAllByProcessedSourceId(
-        processedSourceId: string
+    async readAllByExerciseSetId(
+        exerciseSetId: string
     ): Promise<ReadAllExercisesResponse> {
-        const exercises = await this.db.Exercise.find({ processedSourceId });
+        const exercises = await this.db.Exercise.find({ exerciseSetId });
         if (!exercises || exercises.length === 0) {
             return {
                 isSuccess: false,
-                message: `no exercise found that has processedSourceId: ${processedSourceId}`,
+                message: `no exercise found that has exerciseSetId: ${exerciseSetId}`,
             };
         }
         return {
             isSuccess: true,
-            message: `all exercises read that has processedSourceId: ${processedSourceId}`,
+            message: `all exercises read that has exerciseSetId: ${exerciseSetId}`,
             exercises,
         };
     }

@@ -31,20 +31,12 @@ export class ExerciseController {
         return response;
     }
 
-    @Get('read-all-by-source-id/:sourceId')
-    async readAllBySourceId(
-        @Param('sourceId') sourceId: string
-    ): Promise<ReadAllExercisesResponse> {
-        const response = await this.exerciseService.readAllBySourceId(sourceId);
-        return response;
-    }
-
-    @Get('read-all-by-processed-source-id/:processedSourceId')
+    @Get('read-all-by-exercise-set-id/:exerciseSetId')
     async readAllByProcessedSourceId(
-        @Param('processedSourceId') processedSourceId: string
+        @Param('exerciseSetId') exerciseSetId: string
     ): Promise<ReadAllExercisesResponse> {
         const response =
-            await this.exerciseService.readAllByProcessedSourceId(processedSourceId);
+            await this.exerciseService.readAllByExerciseSetId(exerciseSetId);
         return response;
     }
 

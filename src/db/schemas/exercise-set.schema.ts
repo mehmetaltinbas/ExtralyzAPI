@@ -4,6 +4,7 @@ export const ExerciseSetSchema = new mongoose.Schema(
     {
         sourceType: { type: String, enum: ['Source', 'ProcessedSource'], required: true },
         sourceId: { type: mongoose.Schema.Types.ObjectId, required: true },
+        title: { type: String },
         type: {
             type: String,
             enum: ['mcq', 'trueFalse', 'short', 'openEnded'],
