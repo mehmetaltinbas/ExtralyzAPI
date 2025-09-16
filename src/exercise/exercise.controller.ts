@@ -16,6 +16,7 @@ import { ReadAllExercisesResponse } from './types/response/read-all-exercises.re
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('exercise')
+@UseGuards(AuthGuard)
 export class ExerciseController {
     constructor(private exerciseService: ExerciseService) {}
 

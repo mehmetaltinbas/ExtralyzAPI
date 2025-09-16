@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import ResponseBase from '../shared/interfaces/response-base.interface';
 import { GenerateExercisesResponse, OpenaiCompletionResponse } from './types/openai-responses';
 import { ExerciseDocument } from '../exercise/types/exercise-document.interface';
+import { EvaluateExerciseAnswerResponse } from 'src/openai/types/response/evaluate-exercise-answer.response';
 
 @Injectable()
 export class OpenaiService {
@@ -47,7 +47,7 @@ export class OpenaiService {
         text: string,
         type: string,
         difficulty: string,
-        intendedExerciseCount: number
+        count: number
     ): Promise<GenerateExercisesResponse> {
         const completion = await this.openaiClient.chat.completions.create({
             model: this.model,
@@ -55,14 +55,19 @@ export class OpenaiService {
                 { role: 'developer', content: 'you are a question generation expert' },
                 {
                     role: 'user',
-                    content: `here is a document: "\n${text}\n"\ngenerate clear ${type} type, in ${difficulty} difficulty, ${intendedExerciseCount} number of relevant questions from the provided text to test comprehension\n
+                    content: `here is a document: "\n${text}\n"\ngenerate clear ${type} type, in ${difficulty} difficulty, ${count} number of relevant questions from the provided text to test comprehension\n
                         your output should match one of this template depending on the type of the question:
                         for mcq (5 options): [ { prompt: string, choices: [ string, string, string, string, string], correctChoiceIndex: number }, ... ]\n
-                        for trueFalse: [ { prompt: string, choices: [ true, false], correctChoicesIndex: number }, ... ]\n
-                        for short: [ { prompt: string, solution: string}, ... ]\n
+                        for trueFalse: [ { prompt: string, choices: [ false, true], correctChoiceIndex: number }, ... ]\n
                         for openEnded: [ { prompt: string, solution: string}, ... ]\n
+                        for short: [ { prompt: string, solution: string}, ... ]\n
                         Return only valid JSON. Do not include extra text or formatting.\n
-                        prompt means the questionText (the stem)`,
+                        prompt means the questionText (the stem)\n
+                        also make sure for mcq or for trueFalse the correctChoiceIndex is not undefined\n
+                        for openEnded the solution (answer) is in any length\n
+                        for short the solution (answer) is just 1-5 words of answers (not sentences and not true false exercise)\n
+                        make sure openEnded or short exercise types' solution is not undefined\n
+                        for trueFalse, correctChoiceIndex = 0 indicates false, and 1 indicates true`,
                 },
             ],
         });
@@ -77,6 +82,26 @@ export class OpenaiService {
             isSuccess: true,
             message: 'completion is done',
             exercises,
+        };
+    }
+
+    async evaluateExerciseAnswer(prompt: string): Promise<EvaluateExerciseAnswerResponse> {
+        const completion = await this.openaiClient.chat.completions.create({
+            model: this.model,
+            messages: [
+                { role: 'developer', content: 'you are a exercise answer evaluation expert'},
+                {
+                    role: 'user',
+                    content: prompt,
+                },
+            ],
+        });
+        const response = JSON.parse(completion.choices[0].message.content!) as { score: number; feedback: string; };
+        return { 
+            isSuccess: true,
+            message: 'evaluation for openai is done',
+            score: response.score,
+            feedback: response.feedback,
         };
     }
 }

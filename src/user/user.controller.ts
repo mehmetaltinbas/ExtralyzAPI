@@ -28,13 +28,6 @@ import JwtPayload from '../auth/types/jwt-payload.interface';
 export class UserController {
     constructor(private userService: UserService) {}
 
-    @UseGuards(AuthGuard)
-    @Post('test')
-    async test(@User() user: JwtPayload): Promise<string> {
-        console.log(`userInformation: `, user);
-        return `test`;
-    }
-
     @Post('signup')
     async signUp(@Body() signUpUserDto: SignUpUserDto): Promise<SignUpResponse> {
         const response = await this.userService.createAsync(signUpUserDto);
@@ -53,8 +46,8 @@ export class UserController {
         return response;
     }
 
-    @UseGuards(AuthGuard)
     @Patch('update-by-id/:id')
+    @UseGuards(AuthGuard)
     async updateById(
         @Param('id') id: string,
         @Body() updateUserDto: UpdateUserDto
@@ -63,8 +56,8 @@ export class UserController {
         return response;
     }
 
-    @UseGuards(AuthGuard)
     @Delete('delete-by-id/:id')
+    @UseGuards(AuthGuard)
     async deleteById(@Param('id') id: string): Promise<ResponseBase> {
         const response = this.userService.deleteByIdAsync(id);
         return response;

@@ -7,7 +7,7 @@ export const ExerciseSetSchema = new mongoose.Schema(
         title: { type: String },
         type: {
             type: String,
-            enum: ['mcq', 'trueFalse', 'short', 'openEnded'],
+            enum: ['mix', 'mcq', 'trueFalse', 'short', 'openEnded'],
             required: true,
         },
         difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },

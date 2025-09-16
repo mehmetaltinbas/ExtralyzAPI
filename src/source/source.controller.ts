@@ -24,11 +24,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 
 @Controller('source')
+@UseGuards(AuthGuard)
 export class SourceController {
     constructor(private sourceService: SourceService) {}
 
     @Post('create')
-    @UseGuards(AuthGuard)
     @UseInterceptors(FileInterceptor('file'))
     async create(
         @User() user: JwtPayload,
@@ -39,7 +39,6 @@ export class SourceController {
         return response;
     }
 
-    @UseGuards(AuthGuard)
     @Get('read-all')
     async readAll(@User() user: JwtPayload): Promise<ReadAllSourcesResponse> {
         const response = await this.sourceService.readAll(user.sub);
@@ -60,7 +59,6 @@ export class SourceController {
     }
 
     @Patch('update-by-id/:id')
-    @UseGuards(AuthGuard)
     async updateById(
         @Param('id') id: string,
         @Body() updateSourceDto: UpdateSourceDto
@@ -70,14 +68,12 @@ export class SourceController {
     }
 
     @Delete('delete-by-id/:id')
-    @UseGuards(AuthGuard)
     async deleteById(@Param('id') id: string): Promise<ResponseBase> {
         const response = await this.sourceService.deleteById(id);
         return response;
     }
 
     @Post('process-by-id/:id')
-    @UseGuards(AuthGuard)
     async processById(@Param('id') id: string): Promise<ResponseBase> {
         const response = await this.sourceService.processById(id);
         return response;

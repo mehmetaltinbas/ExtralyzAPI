@@ -5,16 +5,17 @@ import { Model } from 'mongoose';
 import { ExerciseSetDocument } from './types/exercise-set-document.interface';
 import { ProcessedSourceService } from '../processed-source/processed-source.service';
 import { OpenaiService } from '../openai/openai.service';
-import { countWords } from '../shared/utilities/count-words.utility';
 import { ExerciseService } from '../exercise/exercise.service';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import { CreateExerciseDto } from '../exercise/types/dto/create-exercise.dto';
 import { ReadAllExerciseSetsResponse } from './types/response/read-all-exercise-sets.response';
-import { ProcessedSourceDocument } from '../processed-source/types/processed-source-interfaces';
 import { ExtendedSourceDocument } from '../source/types/extended-source-document.interface';
-import { ReadAllExerciseSetsGroupedBySources } from './types/response/read-all-exercise-sets-grouped-by-sources.response';
+import { ReadAllExerciseSetsGroupedBySourcesResponse } from './types/response/read-all-exercise-sets-grouped-by-sources.response';
 import { ExtendedProcessedSourceDocument } from '../processed-source/types/extended-processed-source-document.interface';
 import { ReadSingleExerciseSetResponse } from './types/response/read-single-exercise-set.response';
+import { EvaluateAnswersResponse, ExerciseAnswerEvaluationResult } from 'src/exercise-set/types/response/evaluate-answers.response';
+import { EvaluateAnswersDto } from 'src/exercise-set/types/dto/evaluate-answers.dto';
+import { ExerciseSetTypeStrategyResolverProvider } from 'src/exercise-set/strategies/type/exercise-set-type-strategy-resolver.provider';
 
 @Injectable()
 export class ExerciseSetService {
@@ -23,7 +24,8 @@ export class ExerciseSetService {
         private exerciseService: ExerciseService,
         private openaiService: OpenaiService,
         private sourceService: SourceService,
-        private processedSourceService: ProcessedSourceService
+        private processedSourceService: ProcessedSourceService,
+        private exerciseSetTypeStrategyResolverProvider: ExerciseSetTypeStrategyResolverProvider,
     ) {}
 
     async create(
@@ -32,8 +34,6 @@ export class ExerciseSetService {
     ): Promise<ResponseBase> {
         let sourceText;
         let sourceType;
-
-        console.log(sourceId);
 
         const readSingleSourceResponse = await this.sourceService.readById(sourceId);
         if (readSingleSourceResponse.isSuccess && readSingleSourceResponse.source) {
@@ -73,7 +73,6 @@ export class ExerciseSetService {
             difficulty: createExerciseSetDto.difficulty,
             count: createExerciseSetDto.count,
         });
-        console.log(`\n\nexerciseSet created, here`, exerciseSet);
 
         const promises = generateExercisesResponse.exercises.map((exercise) => {
             const dto: CreateExerciseDto = {
@@ -87,7 +86,6 @@ export class ExerciseSetService {
             } else if (dto.type === 'short' || dto.type === 'openEnded') {
                 dto.solution = exercise.solution;
             }
-            console.log(`\nexerciseDto`, dto);
             return this.exerciseService.create(exerciseSet._id, dto);
         });
         const responses = await Promise.all(promises);
@@ -131,7 +129,7 @@ export class ExerciseSetService {
         return { isSuccess: true, message: 'All exercise sets read', exerciseSets };
     }
 
-    async readAllByUserIdGroupedBySources(userId: string): Promise<ReadAllExerciseSetsGroupedBySources> {
+    async readAllByUserIdGroupedBySources(userId: string): Promise<ReadAllExerciseSetsGroupedBySourcesResponse> {
         const response = await this.sourceService.readAllByUserId(userId);
         if (!response.sources || response.sources.length === 0) {
             return {
@@ -188,5 +186,48 @@ export class ExerciseSetService {
             message: `exerciseSet read by id ${id}`,
             exerciseSet,
         };
+    }
+
+    async evaluateAnswers(evaluateAnswersDto: EvaluateAnswersDto): Promise<EvaluateAnswersResponse> {
+        // console.log(`came to the evaluateAnswers service method here is the evaluateAnswersDto: `, evaluateAnswersDto);
+        // console.log(`\n`);
+
+        const exerciseAnswerEvaluationResults: ExerciseAnswerEvaluationResult[] = [];
+        for (const exercise of evaluateAnswersDto.exercises) {
+            const readExerciseByIdResponse = await this.exerciseService.readById(exercise.id);
+            if (!readExerciseByIdResponse.isSuccess || !readExerciseByIdResponse.exercise) continue; // no exercise read
+            // console.log(`exercise read by id: `, readExerciseByIdResponse.exercise);
+            // console.log(`\n`);
+
+            const resolveTypeStrategyProviderResponse = this.exerciseSetTypeStrategyResolverProvider.resolveTypeStrategyProvider(readExerciseByIdResponse.exercise.type);
+            if (!resolveTypeStrategyProviderResponse.isSuccess || !resolveTypeStrategyProviderResponse.strategy) continue; // no strategy found
+            // console.log(`strategy resolved: `, resolveTypeStrategyProviderResponse.strategy);
+            // console.log(`\n`);
+
+            const evaluatedAnswer = await resolveTypeStrategyProviderResponse.strategy.evaluateAnswer(readExerciseByIdResponse.exercise, exercise.answer);
+            if (!evaluatedAnswer.isSuccess || evaluatedAnswer.score === undefined || !evaluatedAnswer.feedback) continue;
+            // console.log(`evalutedAnswer in strategy: `, evaluatedAnswer);
+            // console.log(`\n`);
+
+            exerciseAnswerEvaluationResults.push({
+                exerciseId: exercise.id,
+                exerciseType: readExerciseByIdResponse.exercise.type,
+                userAnswer: exercise.answer,
+                solution: readExerciseByIdResponse.exercise.solution,
+                correctChoiceIndex: readExerciseByIdResponse.exercise.correctChoiceIndex,
+                score: evaluatedAnswer.score,
+                feedback: evaluatedAnswer.feedback,
+            });
+
+            // console.log(`1 iteration is done \n\n\n\n\n`);
+        }
+        // console.log(`the final exercise answer evaluation results: `, exerciseAnswerEvaluationResults);
+        // console.log(`\n`);
+
+        let totalOfAllScores: number = 0;
+        exerciseAnswerEvaluationResults.forEach(element => totalOfAllScores += element.score);
+        const overallScore = totalOfAllScores / exerciseAnswerEvaluationResults.length;
+
+        return { isSuccess: true, message: 'done', overallScore, exerciseAnswerEvaluationResults };
     }
 }

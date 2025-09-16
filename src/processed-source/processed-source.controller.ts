@@ -25,6 +25,7 @@ import User from '../shared/custom-decorators/user.decorator';
 import JwtPayload from '../auth/types/jwt-payload.interface';
 
 @Controller('processed-source')
+@UseGuards(AuthGuard)
 export class ProcessedSourceController {
     constructor(private processedSourceService: ProcessedSourceService) {}
 
@@ -47,7 +48,6 @@ export class ProcessedSourceController {
     }
 
     @Get('read-all-by-user-id')
-    @UseGuards(AuthGuard)
     async readAllByUserId(@User() user: JwtPayload): Promise<ReadAllProcessedSourcesResponse> {
         const response = await this.processedSourceService.readAllByUserId(user.sub);
         return response;
