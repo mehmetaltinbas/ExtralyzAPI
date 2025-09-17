@@ -62,7 +62,7 @@ export class OpenaiService {
                         for openEnded: [ { prompt: string, solution: string}, ... ]\n
                         for short: [ { prompt: string, solution: string}, ... ]\n
                         Return only valid JSON. Do not include extra text or formatting.\n
-                        prompt means the questionText (the stem)\n
+                        prompt means the the stem of the exercise (questionText)\n
                         also make sure for mcq or for trueFalse the correctChoiceIndex is not undefined\n
                         for openEnded the solution (answer) is in any length\n
                         for short the solution (answer) is just 1-5 words of answers (not sentences and not true false exercise)\n
@@ -71,13 +71,23 @@ export class OpenaiService {
                 },
             ],
         });
+
         const exercises = JSON.parse(
             completion.choices[0].message.content!
         ) as ExerciseDocument[];
-        exercises.forEach((question) => {
-            question.type = type;
-            question.difficulty = difficulty;
+        exercises.forEach((exercise) => {
+            exercise.type = type;
+            exercise.difficulty = difficulty;
+            if (exercise.type === 'mcq') {
+                const correctChoiceIndex = exercise.correctChoiceIndex;
+                const randomIndex = Math.floor(Math.random() * 5);
+                const temporaryElement = exercise.choices[randomIndex];
+                exercise.choices[randomIndex] = exercise.choices[correctChoiceIndex];
+                exercise.choices[correctChoiceIndex] = temporaryElement;
+                exercise.correctChoiceIndex = randomIndex;
+            }
         });
+
         return {
             isSuccess: true,
             message: 'completion is done',
