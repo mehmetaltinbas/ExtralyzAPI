@@ -11,22 +11,38 @@ import {
     UpdateProcessedSourceDto,
 } from './types/processed-source-dtos';
 import { SourceService } from '../source/source.service';
+import { OpenaiService } from 'src/openai/openai.service';
 
 @Injectable()
 export class ProcessedSourceService {
     constructor(
         @Inject('DB_MODELS')
         private db: Record<'ProcessedSource', Model<ProcessedSourceDocument>>,
-        @Inject(forwardRef(() => SourceService)) private sourceService: SourceService
+        @Inject(forwardRef(() => SourceService)) private sourceService: SourceService,
+        private openaiService: OpenaiService,
     ) {}
 
-    async create(
+    async createBySourceId(
         sourceId: string,
         createProcessedSourceDto: CreateProcessedSourceDto
     ): Promise<ResponseBase> {
+        const source = (await this.sourceService.readById(sourceId)).source;
+        if (!source) {
+            return { isSuccess: false, message: `source couldn't read with id: ${sourceId}` };
+        }
+        const abstractiveSummarizationResponse =
+            await this.openaiService.generateAbstractiveSummary({
+                text: source.rawText,
+                tone: createProcessedSourceDto.tone,
+                style: createProcessedSourceDto.style,
+                perspective: createProcessedSourceDto.perspective,
+                comprehensionLevel: createProcessedSourceDto.comprehensionLevel,
+                length: createProcessedSourceDto.length,
+            });
         await this.db.ProcessedSource.create({
             sourceId,
-            ...createProcessedSourceDto,
+            title: createProcessedSourceDto.title,
+            processedText: abstractiveSummarizationResponse.completion,
         });
         return { isSuccess: true, message: 'processed source created' };
     }

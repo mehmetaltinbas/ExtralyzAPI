@@ -29,11 +29,11 @@ import JwtPayload from '../auth/types/jwt-payload.interface';
 export class ProcessedSourceController {
     constructor(private processedSourceService: ProcessedSourceService) {}
 
-    // @Post('create')
-    // async create(@Body() createProcessedSourceDto: CreateProcessedSourceDto): Promise<ResponseBase> {
-    //     const response = await this.processedSourceService.create(createProcessedSourceDto);
-    //     return response;
-    // }
+    @Post('create-by-source-id/:sourceId')
+    async create(@Param('sourceId') sourceId: string, @Body() createProcessedSourceDto: CreateProcessedSourceDto): Promise<ResponseBase> {
+        const response = await this.processedSourceService.createBySourceId(sourceId, createProcessedSourceDto);
+        return response;
+    }
 
     @Get('read-all')
     async readAll(): Promise<ReadAllProcessedSourcesResponse> {

@@ -21,8 +21,8 @@ export class MCQTypeStrategyProvider implements ExerciseSetTypeStrategy {
             Return only valid JSON. Do not include extra text or formatting!`;
         const evaluationResponse = await this.openaiService.evaluateExerciseAnswer(prompt);
         if (!evaluationResponse.isSuccess) return { isSuccess: false, message: evaluationResponse.message };
-        console.log(`evaluation response came from the openai service: `, evaluationResponse);
-        console.log(`\n`);
+        // console.log(`evaluation response came from the openai service: `, evaluationResponse);
+        // console.log(`\n`);
         const score = exercise.correctChoiceIndex === chosenIndex ? 100 : 0;
         return { isSuccess: true, message: 'evaluating answer is done', score, feedback: evaluationResponse.feedback };
     }

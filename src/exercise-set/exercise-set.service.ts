@@ -226,7 +226,7 @@ export class ExerciseSetService {
 
         let totalOfAllScores: number = 0;
         exerciseAnswerEvaluationResults.forEach(element => totalOfAllScores += element.score);
-        const overallScore = totalOfAllScores / exerciseAnswerEvaluationResults.length;
+        const overallScore = Math.floor(totalOfAllScores / exerciseAnswerEvaluationResults.length);
 
         return { isSuccess: true, message: 'done', overallScore, exerciseAnswerEvaluationResults };
     }

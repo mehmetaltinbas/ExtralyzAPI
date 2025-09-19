@@ -72,10 +72,4 @@ export class SourceController {
         const response = await this.sourceService.deleteById(id);
         return response;
     }
-
-    @Post('process-by-id/:id')
-    async processById(@Param('id') id: string): Promise<ResponseBase> {
-        const response = await this.sourceService.processById(id);
-        return response;
-    }
 }

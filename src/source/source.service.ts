@@ -83,24 +83,4 @@ export class SourceService {
         }
         return { isSuccess: true, message: 'source deleted' };
     }
-
-    async processById(id: string): Promise<ResponseBase> {
-        const source = await this.db.Source.findById(id);
-        if (!source) {
-            return { isSuccess: false, message: `source couldn't read with id: ${id}` };
-        }
-        const abstractiveSummarizationResponse =
-            await this.openaiService.generateAbstractiveSummary(source.rawText);
-        const processedSourceCreationResponse = await this.processedSourceService.create(
-            source._id,
-            {
-                title: ``,
-                processedText: abstractiveSummarizationResponse.completion,
-            }
-        );
-        if (!processedSourceCreationResponse.isSuccess) {
-            return processedSourceCreationResponse;
-        }
-        return { isSuccess: true, message: 'source processed, processed source created' };
-    }
 }

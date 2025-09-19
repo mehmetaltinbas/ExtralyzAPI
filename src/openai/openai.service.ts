@@ -4,6 +4,7 @@ import OpenAI from 'openai';
 import { GenerateExercisesResponse, OpenaiCompletionResponse } from './types/openai-responses';
 import { ExerciseDocument } from '../exercise/types/exercise-document.interface';
 import { EvaluateExerciseAnswerResponse } from 'src/openai/types/response/evaluate-exercise-answer.response';
+import { GenerateAbstractiveSummaryDto } from 'src/openai/types/dto/generate-abstractive-summary.dto';
 
 @Injectable()
 export class OpenaiService {
@@ -18,21 +19,30 @@ export class OpenaiService {
         });
     }
 
-    async generateAbstractiveSummary(text: string): Promise<OpenaiCompletionResponse> {
+    async generateAbstractiveSummary(generateAbstractiveSummaryDto: GenerateAbstractiveSummaryDto): Promise<OpenaiCompletionResponse> {
+        const prompt = `You are a professional document analyst. Please process the following document:
+                "${generateAbstractiveSummaryDto.text}"
+                Your task:
+                - Rearrange the content for smoother readability and logical flow. Feel free to reorder sections if needed.
+                - Remove redundancies but keep all key details.
+                - Include all sections and supplementary topics.
+                - Add brief clarifications, examples, or context where it helps understanding.
+                - Simplify complex concepts without losing important details.
+                - Use a clear, professional tone appropriate for the audience.
+                - Maintain factual accuracy and the original intent; do not add unrelated ideas.
+                Output format:
+                - Tone: ${generateAbstractiveSummaryDto.tone}
+                - Style: ${generateAbstractiveSummaryDto.style}
+                - Perspective: ${generateAbstractiveSummaryDto.perspective}
+                - Comprehensiveness: ${generateAbstractiveSummaryDto.comprehensionLevel}
+                - Length: ${generateAbstractiveSummaryDto.length}`;
         const completion = await this.openaiClient.chat.completions.create({
             model: this.model,
             messages: [
                 { role: 'developer', content: 'you are an document analyst' },
                 {
                     role: 'user',
-                    content: `here is a document: "\n${text}\n"\nrearrange this document and make a shorter version by depending on these principles:\n"
-                        - Rearrange content for smoother readability and better understanding. Be free to rearrange document's order if needed for smoother understanding.\n
-                        - Eliminate redundancy while retaining key details.\n
-                        - Ensure all sections and supplementary topics are included.\n
-                        - Introduce brief clarifications, examples, or context where beneficial to deepen the reader's understanding.\n
-                        - Use a clear, professional tone; simplify complex concepts for wider accessibility. Simplify complex ideas without losing important details.\n
-                        - Retain all factual details and improve clarity of delivery.\n
-                        - Stick to the document's intent without adding unrelated ideas."`,
+                    content: prompt,
                 },
             ],
         });
