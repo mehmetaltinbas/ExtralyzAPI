@@ -13,7 +13,10 @@ import { ExtendedSourceDocument } from '../source/types/extended-source-document
 import { ReadAllExerciseSetsGroupedBySourcesResponse } from './types/response/read-all-exercise-sets-grouped-by-sources.response';
 import { ExtendedProcessedSourceDocument } from '../processed-source/types/extended-processed-source-document.interface';
 import { ReadSingleExerciseSetResponse } from './types/response/read-single-exercise-set.response';
-import { EvaluateAnswersResponse, ExerciseAnswerEvaluationResult } from 'src/exercise-set/types/response/evaluate-answers.response';
+import {
+    EvaluateAnswersResponse,
+    ExerciseAnswerEvaluationResult,
+} from 'src/exercise-set/types/response/evaluate-answers.response';
 import { EvaluateAnswersDto } from 'src/exercise-set/types/dto/evaluate-answers.dto';
 import { ExerciseSetTypeStrategyResolverProvider } from 'src/exercise-set/strategies/type/exercise-set-type-strategy-resolver.provider';
 
@@ -25,7 +28,7 @@ export class ExerciseSetService {
         private openaiService: OpenaiService,
         private sourceService: SourceService,
         private processedSourceService: ProcessedSourceService,
-        private exerciseSetTypeStrategyResolverProvider: ExerciseSetTypeStrategyResolverProvider,
+        private exerciseSetTypeStrategyResolverProvider: ExerciseSetTypeStrategyResolverProvider
     ) {}
 
     async create(
@@ -129,7 +132,9 @@ export class ExerciseSetService {
         return { isSuccess: true, message: 'All exercise sets read', exerciseSets };
     }
 
-    async readAllByUserIdGroupedBySources(userId: string): Promise<ReadAllExerciseSetsGroupedBySourcesResponse> {
+    async readAllByUserIdGroupedBySources(
+        userId: string
+    ): Promise<ReadAllExerciseSetsGroupedBySourcesResponse> {
         const response = await this.sourceService.readAllByUserId(userId);
         if (!response.sources || response.sources.length === 0) {
             return {
@@ -152,7 +157,10 @@ export class ExerciseSetService {
                         sourceId: processedSource._id,
                     });
                     const extendedProcessedSource: ExtendedProcessedSourceDocument = {
-                        ...(processedSource.toObject() as Omit<ExtendedProcessedSourceDocument, 'exerciseSets'>),
+                        ...(processedSource.toObject() as Omit<
+                            ExtendedProcessedSourceDocument,
+                            'exerciseSets'
+                        >),
                         exerciseSets: exerciseSetsOfProcessedSource,
                     };
                     processedSources.push(extendedProcessedSource);
@@ -188,24 +196,43 @@ export class ExerciseSetService {
         };
     }
 
-    async evaluateAnswers(evaluateAnswersDto: EvaluateAnswersDto): Promise<EvaluateAnswersResponse> {
+    async evaluateAnswers(
+        evaluateAnswersDto: EvaluateAnswersDto
+    ): Promise<EvaluateAnswersResponse> {
         // console.log(`came to the evaluateAnswers service method here is the evaluateAnswersDto: `, evaluateAnswersDto);
         // console.log(`\n`);
 
         const exerciseAnswerEvaluationResults: ExerciseAnswerEvaluationResult[] = [];
         for (const exercise of evaluateAnswersDto.exercises) {
             const readExerciseByIdResponse = await this.exerciseService.readById(exercise.id);
-            if (!readExerciseByIdResponse.isSuccess || !readExerciseByIdResponse.exercise) continue; // no exercise read
+            if (!readExerciseByIdResponse.isSuccess || !readExerciseByIdResponse.exercise)
+                continue; // no exercise read
             // console.log(`exercise read by id: `, readExerciseByIdResponse.exercise);
             // console.log(`\n`);
 
-            const resolveTypeStrategyProviderResponse = this.exerciseSetTypeStrategyResolverProvider.resolveTypeStrategyProvider(readExerciseByIdResponse.exercise.type);
-            if (!resolveTypeStrategyProviderResponse.isSuccess || !resolveTypeStrategyProviderResponse.strategy) continue; // no strategy found
+            const resolveTypeStrategyProviderResponse =
+                this.exerciseSetTypeStrategyResolverProvider.resolveTypeStrategyProvider(
+                    readExerciseByIdResponse.exercise.type
+                );
+            if (
+                !resolveTypeStrategyProviderResponse.isSuccess ||
+                !resolveTypeStrategyProviderResponse.strategy
+            )
+                continue; // no strategy found
             // console.log(`strategy resolved: `, resolveTypeStrategyProviderResponse.strategy);
             // console.log(`\n`);
 
-            const evaluatedAnswer = await resolveTypeStrategyProviderResponse.strategy.evaluateAnswer(readExerciseByIdResponse.exercise, exercise.answer);
-            if (!evaluatedAnswer.isSuccess || evaluatedAnswer.score === undefined || !evaluatedAnswer.feedback) continue;
+            const evaluatedAnswer =
+                await resolveTypeStrategyProviderResponse.strategy.evaluateAnswer(
+                    readExerciseByIdResponse.exercise,
+                    exercise.answer
+                );
+            if (
+                !evaluatedAnswer.isSuccess ||
+                evaluatedAnswer.score === undefined ||
+                !evaluatedAnswer.feedback
+            )
+                continue;
             // console.log(`evalutedAnswer in strategy: `, evaluatedAnswer);
             // console.log(`\n`);
 
@@ -225,9 +252,18 @@ export class ExerciseSetService {
         // console.log(`\n`);
 
         let totalOfAllScores: number = 0;
-        exerciseAnswerEvaluationResults.forEach(element => totalOfAllScores += element.score);
-        const overallScore = Math.floor(totalOfAllScores / exerciseAnswerEvaluationResults.length);
+        exerciseAnswerEvaluationResults.forEach(
+            (element) => (totalOfAllScores += element.score)
+        );
+        const overallScore = Math.floor(
+            totalOfAllScores / exerciseAnswerEvaluationResults.length
+        );
 
-        return { isSuccess: true, message: 'done', overallScore, exerciseAnswerEvaluationResults };
+        return {
+            isSuccess: true,
+            message: 'done',
+            overallScore,
+            exerciseAnswerEvaluationResults,
+        };
     }
 }

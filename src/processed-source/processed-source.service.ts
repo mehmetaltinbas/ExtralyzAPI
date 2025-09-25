@@ -19,7 +19,7 @@ export class ProcessedSourceService {
         @Inject('DB_MODELS')
         private db: Record<'ProcessedSource', Model<ProcessedSourceDocument>>,
         @Inject(forwardRef(() => SourceService)) private sourceService: SourceService,
-        private openaiService: OpenaiService,
+        private openaiService: OpenaiService
     ) {}
 
     async createBySourceId(
@@ -60,7 +60,7 @@ export class ProcessedSourceService {
         if (!response.isSuccess || response.sources === undefined) {
             return response;
         }
-        const sourceIds = response.sources.map(source => source._id);
+        const sourceIds = response.sources.map((source) => source._id);
         const processedSources = await this.db.ProcessedSource.find({
             sourceId: { $in: sourceIds },
         });

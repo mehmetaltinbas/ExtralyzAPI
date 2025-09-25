@@ -14,6 +14,13 @@ import { ExerciseSetTypeStrategyResolverProvider } from 'src/exercise-set/strate
 @Module({
     imports: [ExerciseModule, OpenaiModule, SourceModule, ProcessedSourceModule],
     controllers: [ExerciseSetController],
-    providers: [ExerciseSetService, ExerciseSetTypeStrategyResolverProvider, MCQTypeStrategyProvider, TrueFalseTypeStrategyProvider, OpenEndedTypeStrategyProvider, ShortTypeStrategyProvider],
+    providers: [
+        ExerciseSetService,
+        ExerciseSetTypeStrategyResolverProvider,
+        MCQTypeStrategyProvider,
+        TrueFalseTypeStrategyProvider,
+        OpenEndedTypeStrategyProvider,
+        ShortTypeStrategyProvider,
+    ],
 })
 export class ExerciseSetModule {}

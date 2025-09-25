@@ -49,9 +49,7 @@ export class ExerciseService {
         return { isSuccess: true, message: `exercise read by id: ${id}`, exercise };
     }
 
-    async readAllByExerciseSetId(
-        exerciseSetId: string
-    ): Promise<ReadAllExercisesResponse> {
+    async readAllByExerciseSetId(exerciseSetId: string): Promise<ReadAllExercisesResponse> {
         const exercises = await this.db.Exercise.find({ exerciseSetId });
         if (!exercises || exercises.length === 0) {
             return {

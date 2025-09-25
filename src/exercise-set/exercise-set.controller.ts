@@ -39,13 +39,19 @@ export class ExerciseSetController {
     }
 
     @Get('read-all-by-user-id-grouped-by-sources')
-    async readAllByUserIdGroupedBySources(@User() user: JwtPayload): Promise<ReadAllExerciseSetsGroupedBySourcesResponse> {
-        const response = await this.exerciseSetService.readAllByUserIdGroupedBySources(user.sub);
+    async readAllByUserIdGroupedBySources(
+        @User() user: JwtPayload
+    ): Promise<ReadAllExerciseSetsGroupedBySourcesResponse> {
+        const response = await this.exerciseSetService.readAllByUserIdGroupedBySources(
+            user.sub
+        );
         return response;
     }
 
     @Post('evaluate-answers')
-    async evaluateAnswers(@Body() evaluateAnswersDto: EvaluateAnswersDto): Promise<EvaluateAnswersResponse> {
+    async evaluateAnswers(
+        @Body() evaluateAnswersDto: EvaluateAnswersDto
+    ): Promise<EvaluateAnswersResponse> {
         const response = this.exerciseSetService.evaluateAnswers(evaluateAnswersDto);
         return response;
     }

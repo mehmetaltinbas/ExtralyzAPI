@@ -19,7 +19,9 @@ export class OpenaiService {
         });
     }
 
-    async generateAbstractiveSummary(generateAbstractiveSummaryDto: GenerateAbstractiveSummaryDto): Promise<OpenaiCompletionResponse> {
+    async generateAbstractiveSummary(
+        generateAbstractiveSummaryDto: GenerateAbstractiveSummaryDto
+    ): Promise<OpenaiCompletionResponse> {
         const prompt = `You are a professional document analyst. Please process the following document:
                 "${generateAbstractiveSummaryDto.text}"
                 Your task:
@@ -109,15 +111,18 @@ export class OpenaiService {
         const completion = await this.openaiClient.chat.completions.create({
             model: this.model,
             messages: [
-                { role: 'developer', content: 'you are a exercise answer evaluation expert'},
+                { role: 'developer', content: 'you are a exercise answer evaluation expert' },
                 {
                     role: 'user',
                     content: prompt,
                 },
             ],
         });
-        const response = JSON.parse(completion.choices[0].message.content!) as { score: number; feedback: string; };
-        return { 
+        const response = JSON.parse(completion.choices[0].message.content!) as {
+            score: number;
+            feedback: string;
+        };
+        return {
             isSuccess: true,
             message: 'evaluation for openai is done',
             score: response.score,

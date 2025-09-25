@@ -38,7 +38,9 @@
         "mammoth": "^1.9.1",
         "mongoose": "^8.16.1",
         "openai": "^5.11.0",
+        "pdf-lib": "^1.17.1",
         "pdf-parse": "^1.1.1",
+        "pdfjs-dist": "^5.4.149",
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1"
     },

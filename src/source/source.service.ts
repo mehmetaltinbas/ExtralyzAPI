@@ -28,7 +28,7 @@ export class SourceService {
         await this.db.Source.create({
             userId,
             type: 'document', // later text and youtubeUrl should be added using a pattern
-            title: file.originalname,
+            title: createSourceDto.title ? createSourceDto.title : file.originalname,
             rawText: extractedText,
         });
         return { isSuccess: true, message: 'source created' };

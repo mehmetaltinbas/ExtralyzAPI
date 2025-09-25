@@ -97,7 +97,12 @@ true burden—finding a reason to keep going in a world that keeps falling apart
             difficulty: 'hard',
             count: 4,
         };
-        const response = await this.openaiService.generateExercises(parameters.text, parameters.type, parameters.difficulty, parameters.count);
+        const response = await this.openaiService.generateExercises(
+            parameters.text,
+            parameters.type,
+            parameters.difficulty,
+            parameters.count
+        );
         return response;
     }
 }

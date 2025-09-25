@@ -36,8 +36,7 @@ export class ExerciseController {
     async readAllByProcessedSourceId(
         @Param('exerciseSetId') exerciseSetId: string
     ): Promise<ReadAllExercisesResponse> {
-        const response =
-            await this.exerciseService.readAllByExerciseSetId(exerciseSetId);
+        const response = await this.exerciseService.readAllByExerciseSetId(exerciseSetId);
         return response;
     }
 
