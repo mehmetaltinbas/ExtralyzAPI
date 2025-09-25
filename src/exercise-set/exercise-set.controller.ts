@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-redeclare
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ExerciseSetService } from './exercise-set.service';
 import { AuthGuard } from '../auth/auth.guard';
 import ResponseBase from '../shared/interfaces/response-base.interface';
@@ -45,6 +45,12 @@ export class ExerciseSetController {
         const response = await this.exerciseSetService.readAllByUserIdGroupedBySources(
             user.sub
         );
+        return response;
+    }
+
+    @Delete('delete-by-id/:id')
+    async deleteById(@Param('id') id: string): Promise<ResponseBase> {
+        const response = await this.exerciseSetService.deleteById(id);
         return response;
     }
 

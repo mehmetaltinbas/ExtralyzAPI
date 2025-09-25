@@ -266,4 +266,12 @@ export class ExerciseSetService {
             exerciseAnswerEvaluationResults,
         };
     }
+
+    async deleteById(id: string): Promise<ResponseBase> {
+        const deletedExerciseSet = await this.db.ExerciseSet.findByIdAndDelete(id);
+        if (!deletedExerciseSet) {
+            return { isSuccess: false, message: "exercise set couldn't deleted" };
+        }
+        return { isSuccess: true, message: "exercise set deleted" };
+    }
 }
