@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ExerciseDocument } from './types/exercise-document.interface';
 import { Model } from 'mongoose';
 import { ReadAllExercisesResponse } from './types/response/read-all-exercises.response';
@@ -9,6 +9,7 @@ import { OpenaiService } from '../openai/openai.service';
 import { SourceService } from '../source/source.service';
 import { ProcessedSourceService } from '../processed-source/processed-source.service';
 import { countWords } from '../shared/utilities/count-words.utility';
+import { ExerciseSetService } from 'src/exercise-set/exercise-set.service';
 
 @Injectable()
 export class ExerciseService {
@@ -16,7 +17,8 @@ export class ExerciseService {
         @Inject('DB_MODELS') private db: Record<'Exercise', Model<ExerciseDocument>>,
         private openaiService: OpenaiService,
         private sourceService: SourceService,
-        private processedSourceService: ProcessedSourceService
+        private processedSourceService: ProcessedSourceService,
+        @Inject(forwardRef(() => ExerciseSetService)) private exerciseSetService: ExerciseSetService,
     ) {}
 
     async create(
@@ -69,9 +71,26 @@ export class ExerciseService {
     // }
 
     async deleteById(id: string): Promise<ResponseBase> {
+        const exercise = (await this.readById(id)).exercise;
+        if (!exercise) {
+            return { isSuccess: false, message: 'no exercise found assoicated with given id' };
+        }
+        const associatedExerciseSet = (await this.exerciseSetService.readById(exercise.exerciseSetId)).exerciseSet;
+        if (!associatedExerciseSet) {
+            return { isSuccess: false, message: 'no assoicated exercise set found' };
+        }
         const deletedExercise = await this.db.Exercise.findByIdAndDelete(id);
         if (!deletedExercise) {
             return { isSuccess: false, message: 'no exercise found to delete' };
+        }
+        const exerciseSetUpdateResponse = await this.exerciseSetService.updateById(
+            associatedExerciseSet._id,
+            { count: associatedExerciseSet.count - 1 }
+        );
+        if (!exerciseSetUpdateResponse.isSuccess) {
+            return { isSuccess: false, message: `exercise deleted by exercise count of associated exercise set couldn't updated,
+                the update response message: ${exerciseSetUpdateResponse.message}`
+            };
         }
         return { isSuccess: true, message: `exercise deleted by id: ${id}` };
     }

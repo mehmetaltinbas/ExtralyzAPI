@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateExerciseSetDto } from './types/dto/create-exercise-set.dto';
 import { SourceService } from '../source/source.service';
 import { Model } from 'mongoose';
@@ -19,12 +19,13 @@ import {
 } from 'src/exercise-set/types/response/evaluate-answers.response';
 import { EvaluateAnswersDto } from 'src/exercise-set/types/dto/evaluate-answers.dto';
 import { ExerciseSetTypeStrategyResolverProvider } from 'src/exercise-set/strategies/type/exercise-set-type-strategy-resolver.provider';
+import { UpdateExerciseSetDto } from 'src/exercise-set/types/dto/update-exercise-set.dto';
 
 @Injectable()
 export class ExerciseSetService {
     constructor(
         @Inject('DB_MODELS') private db: Record<'ExerciseSet', Model<ExerciseSetDocument>>,
-        private exerciseService: ExerciseService,
+        @Inject(forwardRef(() => ExerciseService)) private exerciseService: ExerciseService,
         private openaiService: OpenaiService,
         private sourceService: SourceService,
         private processedSourceService: ProcessedSourceService,
@@ -196,6 +197,33 @@ export class ExerciseSetService {
         };
     }
 
+    /**
+     * only updates given fields
+    */
+    async updateById(id: string, updateExerciseSetDto: UpdateExerciseSetDto): Promise<ResponseBase> {
+        const cleanedDto = Object.fromEntries(
+            Object.entries(updateExerciseSetDto).filter(([_, value]) => value !== undefined)
+        );
+        const updated = await this.db.ExerciseSet.findByIdAndUpdate(
+            id, 
+            { $set: cleanedDto},
+            { new: true }
+        );
+
+        if (!updated) {
+            return {isSuccess: false, message: 'exercise set not found' };
+        }
+        return { isSuccess: true, message: 'exercise set updated' };
+    }
+
+    async deleteById(id: string): Promise<ResponseBase> {
+        const deletedExerciseSet = await this.db.ExerciseSet.findByIdAndDelete(id);
+        if (!deletedExerciseSet) {
+            return { isSuccess: false, message: "exercise set couldn't deleted" };
+        }
+        return { isSuccess: true, message: "exercise set deleted" };
+    }
+
     async evaluateAnswers(
         evaluateAnswersDto: EvaluateAnswersDto
     ): Promise<EvaluateAnswersResponse> {
@@ -265,13 +293,5 @@ export class ExerciseSetService {
             overallScore,
             exerciseAnswerEvaluationResults,
         };
-    }
-
-    async deleteById(id: string): Promise<ResponseBase> {
-        const deletedExerciseSet = await this.db.ExerciseSet.findByIdAndDelete(id);
-        if (!deletedExerciseSet) {
-            return { isSuccess: false, message: "exercise set couldn't deleted" };
-        }
-        return { isSuccess: true, message: "exercise set deleted" };
     }
 }
