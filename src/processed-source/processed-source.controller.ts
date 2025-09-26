@@ -41,11 +41,11 @@ export class ProcessedSourceController {
         return response;
     }
 
-    @Get('read-all')
-    async readAll(): Promise<ReadAllProcessedSourcesResponse> {
-        const response = await this.processedSourceService.readAll();
-        return response;
-    }
+    // @Get('read-all')
+    // async readAll(): Promise<ReadAllProcessedSourcesResponse> {
+    //     const response = await this.processedSourceService.readAll();
+    //     return response;
+    // }
 
     @Get('read-by-id/:id')
     async readById(@Param('id') id: string): Promise<ReadSingleProcessedSourceResponse> {

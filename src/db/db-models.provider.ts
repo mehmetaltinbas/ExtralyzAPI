@@ -1,9 +1,9 @@
 import { Mongoose } from 'mongoose';
-import { UserSchema } from './schemas/user.schema';
-import { SourceSchema } from './schemas/source.schema';
-import { ProcessedSourceSchema } from './schemas/processed-source.schema';
-import { ExerciseSetSchema } from './schemas/exercise-set.schema';
-import { ExerciseSchema } from './schemas/exercise.schema';
+import { UserModel } from './schemas/user.model';
+import { SourceModel } from './schemas/source.model';
+import { ProcessedSourceModel } from './schemas/processed-source.model';
+import { ExerciseSetModel } from './schemas/exercise-set.model';
+import { ExerciseModel } from './schemas/exercise.model';
 
 let models: Record<string, Mongoose['Model']>;
 
@@ -12,11 +12,11 @@ export const dbModelsProvider = {
     useFactory: (mongoose: Mongoose): Record<string, Mongoose['Model']> => {
         console.log('creating models...');
         models = {
-            User: mongoose.model('User', UserSchema),
-            Source: mongoose.model('Source', SourceSchema),
-            ProcessedSource: mongoose.model('ProcessedSource', ProcessedSourceSchema),
-            ExerciseSet: mongoose.model('ExerciseSet', ExerciseSetSchema),
-            Exercise: mongoose.model('Exercise', ExerciseSchema),
+            User: UserModel,
+            Source: SourceModel,
+            ProcessedSource: ProcessedSourceModel,
+            ExerciseSet: ExerciseSetModel,
+            Exercise: ExerciseModel,
         };
         return models;
     },

@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 
-export const ExerciseSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
     {
         exerciseSetId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -20,3 +20,5 @@ export const ExerciseSchema = new mongoose.Schema(
     },
     { timestamps: true }
 );
+
+export const ExerciseModel = mongoose.model('Exercise', schema);

@@ -47,13 +47,13 @@ export class ProcessedSourceService {
         return { isSuccess: true, message: 'processed source created' };
     }
 
-    async readAll(): Promise<ReadAllProcessedSourcesResponse> {
-        const processedSources = await this.db.ProcessedSource.find();
-        if (processedSources.length === 0) {
-            return { isSuccess: false, message: 'no processed sources found' };
-        }
-        return { isSuccess: true, message: 'all processed sources read', processedSources };
-    }
+    // async readAll(): Promise<ReadAllProcessedSourcesResponse> {
+    //     const processedSources = await this.db.ProcessedSource.find();
+    //     if (processedSources.length === 0) {
+    //         return { isSuccess: false, message: 'no processed sources found' };
+    //     }
+    //     return { isSuccess: true, message: 'all processed sources read', processedSources };
+    // }
 
     async readAllByUserId(userId: string): Promise<ReadAllProcessedSourcesResponse> {
         const response = await this.sourceService.readAllByUserId(userId);

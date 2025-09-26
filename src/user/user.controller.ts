@@ -12,24 +12,22 @@ import {
     Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { SignUpUserDto, UpdateUserDto } from './types/user-dtos';
 import ResponseBase from '../shared/interfaces/response-base.interface';
-import {
-    ReadAllUsersResponse,
-    ReadSingleUserResponse,
-    SignUpResponse,
-} from './types/user-responses';
 import { AuthGuard } from '../auth/auth.guard';
 import { Request as ExpressRequest } from 'express';
 import User from '../shared/custom-decorators/user.decorator';
 import JwtPayload from '../auth/types/jwt-payload.interface';
+import { SignUpUserDto } from 'src/user/types/dto/sign-up-user.dto';
+import { ReadAllUsersResponse } from 'src/user/types/response/read-all-users.response';
+import { ReadSingleUserResponse } from 'src/user/types/response/read-single-user.response';
+import { UpdateUserDto } from 'src/user/types/dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
     constructor(private userService: UserService) {}
 
     @Post('signup')
-    async signUp(@Body() signUpUserDto: SignUpUserDto): Promise<SignUpResponse> {
+    async signUp(@Body() signUpUserDto: SignUpUserDto): Promise<ResponseBase> {
         const response = await this.userService.createAsync(signUpUserDto);
         return response;
     }

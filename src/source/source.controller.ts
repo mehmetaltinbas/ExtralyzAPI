@@ -39,12 +39,6 @@ export class SourceController {
         return response;
     }
 
-    @Get('read-all')
-    async readAll(@User() user: JwtPayload): Promise<ReadAllSourcesResponse> {
-        const response = await this.sourceService.readAll(user.sub);
-        return response;
-    }
-
     @Get('read-by-id/:id')
     async readById(@Param('id') id: string): Promise<ReadSingleSourceResponse> {
         const response = await this.sourceService.readById(id);

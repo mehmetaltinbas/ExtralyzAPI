@@ -11,8 +11,3 @@ export class SignUpUserDto {
     @IsNotEmpty()
     readonly password!: string;
 }
-
-export class UpdateUserDto {
-    readonly userName: string | undefined;
-    readonly password: string | undefined;
-}
