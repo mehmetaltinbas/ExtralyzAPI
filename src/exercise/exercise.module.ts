@@ -7,7 +7,12 @@ import { ProcessedSourceModule } from '../processed-source/processed-source.modu
 import { ExerciseSetModule } from 'src/exercise-set/exercise-set.module';
 
 @Module({
-    imports: [OpenaiModule, SourceModule, ProcessedSourceModule, forwardRef(() => ExerciseSetModule)],
+    imports: [
+        OpenaiModule,
+        SourceModule,
+        ProcessedSourceModule,
+        forwardRef(() => ExerciseSetModule),
+    ],
     controllers: [ExerciseController],
     providers: [ExerciseService],
     exports: [ExerciseService],

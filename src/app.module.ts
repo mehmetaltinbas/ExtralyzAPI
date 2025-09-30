@@ -9,6 +9,7 @@ import { ProcessedSourceModule } from './processed-source/processed-source.modul
 import { ExerciseModule } from './exercise/exercise.module';
 import { OpenaiModule } from './openai/openai.module';
 import { ExerciseSetModule } from './exercise-set/exercise-set.module';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
     imports: [
@@ -24,6 +25,7 @@ import { ExerciseSetModule } from './exercise-set/exercise-set.module';
         ExerciseSetModule,
         ExerciseModule,
         OpenaiModule,
+        EventsModule,
     ],
     controllers: [],
     providers: [],

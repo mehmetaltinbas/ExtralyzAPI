@@ -9,9 +9,10 @@ import type {
 @Injectable()
 export class PdfTextExtractor implements TextExtractor {
     async extractText(fileBuffer: Buffer): Promise<string> {
-        const pdfjs = (await import('pdfjs-dist/legacy/build/pdf.mjs'));
+        const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
 
-        const pdfDocument = await pdfjs.getDocument({ data: new Uint8Array(fileBuffer) }).promise;
+        const pdfDocument = await pdfjs.getDocument({ data: new Uint8Array(fileBuffer) })
+            .promise;
         let fullText = '';
 
         for (let pageNum = 1; pageNum <= pdfDocument.numPages; pageNum++) {

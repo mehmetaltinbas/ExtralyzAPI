@@ -199,19 +199,22 @@ export class ExerciseSetService {
 
     /**
      * only updates given fields
-    */
-    async updateById(id: string, updateExerciseSetDto: UpdateExerciseSetDto): Promise<ResponseBase> {
+     */
+    async updateById(
+        id: string,
+        updateExerciseSetDto: UpdateExerciseSetDto
+    ): Promise<ResponseBase> {
         const cleanedDto = Object.fromEntries(
             Object.entries(updateExerciseSetDto).filter(([_, value]) => value !== undefined)
         );
         const updated = await this.db.ExerciseSet.findByIdAndUpdate(
-            id, 
-            { $set: cleanedDto},
+            id,
+            { $set: cleanedDto },
             { new: true }
         );
 
         if (!updated) {
-            return {isSuccess: false, message: 'exercise set not found' };
+            return { isSuccess: false, message: 'exercise set not found' };
         }
         return { isSuccess: true, message: 'exercise set updated' };
     }
@@ -221,7 +224,7 @@ export class ExerciseSetService {
         if (!deletedExerciseSet) {
             return { isSuccess: false, message: "exercise set couldn't deleted" };
         }
-        return { isSuccess: true, message: "exercise set deleted" };
+        return { isSuccess: true, message: 'exercise set deleted' };
     }
 
     async evaluateAnswers(

@@ -12,7 +12,12 @@ import { OpenEndedTypeStrategyProvider } from 'src/exercise-set/strategies/type/
 import { ExerciseSetTypeStrategyResolverProvider } from 'src/exercise-set/strategies/type/exercise-set-type-strategy-resolver.provider';
 
 @Module({
-    imports: [forwardRef(() => ExerciseModule), OpenaiModule, SourceModule, ProcessedSourceModule],
+    imports: [
+        forwardRef(() => ExerciseModule),
+        OpenaiModule,
+        SourceModule,
+        ProcessedSourceModule,
+    ],
     controllers: [ExerciseSetController],
     providers: [
         ExerciseSetService,

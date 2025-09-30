@@ -20,8 +20,10 @@ const schema = new mongoose.Schema(
 
 schema.post('findOneAndDelete', async function (document: ExerciseSetDocument) {
     if (document) {
-        const associatedExerciseDocuments = await ExerciseModel.find({ exerciseSetId: document._id });
-        const promises = associatedExerciseDocuments.map(exerciseDocument => {
+        const associatedExerciseDocuments = await ExerciseModel.find({
+            exerciseSetId: document._id,
+        });
+        const promises = associatedExerciseDocuments.map((exerciseDocument) => {
             return ExerciseModel.findByIdAndDelete(exerciseDocument._id);
         });
         await Promise.all(promises);

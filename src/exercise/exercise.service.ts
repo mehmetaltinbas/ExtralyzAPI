@@ -18,7 +18,8 @@ export class ExerciseService {
         private openaiService: OpenaiService,
         private sourceService: SourceService,
         private processedSourceService: ProcessedSourceService,
-        @Inject(forwardRef(() => ExerciseSetService)) private exerciseSetService: ExerciseSetService,
+        @Inject(forwardRef(() => ExerciseSetService))
+        private exerciseSetService: ExerciseSetService
     ) {}
 
     async create(
@@ -75,7 +76,9 @@ export class ExerciseService {
         if (!exercise) {
             return { isSuccess: false, message: 'no exercise found assoicated with given id' };
         }
-        const associatedExerciseSet = (await this.exerciseSetService.readById(exercise.exerciseSetId)).exerciseSet;
+        const associatedExerciseSet = (
+            await this.exerciseSetService.readById(exercise.exerciseSetId)
+        ).exerciseSet;
         if (!associatedExerciseSet) {
             return { isSuccess: false, message: 'no assoicated exercise set found' };
         }
@@ -88,8 +91,10 @@ export class ExerciseService {
             { count: associatedExerciseSet.count - 1 }
         );
         if (!exerciseSetUpdateResponse.isSuccess) {
-            return { isSuccess: false, message: `exercise deleted by exercise count of associated exercise set couldn't updated,
-                the update response message: ${exerciseSetUpdateResponse.message}`
+            return {
+                isSuccess: false,
+                message: `exercise deleted by exercise count of associated exercise set couldn't updated,
+                the update response message: ${exerciseSetUpdateResponse.message}`,
             };
         }
         return { isSuccess: true, message: `exercise deleted by id: ${id}` };

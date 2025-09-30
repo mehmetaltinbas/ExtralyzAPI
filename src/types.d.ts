@@ -5,3 +5,9 @@ declare module 'express' {
         user?: JwtPayload; // same type as above
     }
 }
+
+declare module 'socket.io' {
+    interface Socket {
+        user?: JwtPayload;
+    }
+}
