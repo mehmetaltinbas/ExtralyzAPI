@@ -14,14 +14,16 @@ import {
     UploadedFile,
 } from '@nestjs/common';
 import { SourceService } from './source.service';
-import { CreateSourceDto, UpdateSourceDto } from './types/source-dtos';
-import { ReadAllSourcesResponse, ReadSingleSourceResponse } from './types/source-responses';
+import { UpdateSourceDto } from './types/dto/update-source.dto';
 import ResponseBase from '../shared/interfaces/response-base.interface';
 import { AuthGuard } from '../auth/auth.guard';
 import JwtPayload from '../auth/types/jwt-payload.interface';
 import User from '../shared/custom-decorators/user.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { CreateSourceDto } from 'src/source/types/dto/create-source.dto';
+import { ReadSingleSourceResponse } from 'src/source/types/response/read-single-source.response';
+import { ReadAllSourcesResponse } from 'src/source/types/response/read-all-sources.response';
 
 @Controller('source')
 @UseGuards(AuthGuard)

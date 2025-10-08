@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 import { ExerciseSetModel } from 'src/db/schemas/exercise-set.model';
 import { ProcessedSourceModel } from 'src/db/schemas/processed-source.model';
-import { SourceDocument } from 'src/source/types/source-interfaces';
+import { SourceDocument } from 'src/source/types/source-document.interface';
 
 const schema = new mongoose.Schema(
     {

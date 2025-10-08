@@ -1,13 +1,15 @@
 import { Inject, Injectable } from '@nestjs/common';
 import ResponseBase from '../shared/interfaces/response-base.interface';
-import { CreateSourceDto, UpdateSourceDto } from './types/source-dtos';
+import { UpdateSourceDto } from './types/dto/update-source.dto';
 import { Model } from 'mongoose';
-import { SourceDocument } from './types/source-interfaces';
-import { ReadAllSourcesResponse, ReadSingleSourceResponse } from './types/source-responses';
+import { SourceDocument } from './types/source-document.interface';
 import { Express } from 'express';
 import { TextExtractorService } from './text-extractor/text-extractor.service';
 import { OpenaiService } from '../openai/openai.service';
 import { ProcessedSourceService } from '../processed-source/processed-source.service';
+import { CreateSourceDto } from 'src/source/types/dto/create-source.dto';
+import { ReadSingleSourceResponse } from 'src/source/types/response/read-single-source.response';
+import { ReadAllSourcesResponse } from 'src/source/types/response/read-all-sources.response';
 
 @Injectable()
 export class SourceService {

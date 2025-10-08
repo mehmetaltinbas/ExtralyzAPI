@@ -14,7 +14,7 @@ import JwtPayload from 'src/auth/types/jwt-payload.interface';
 import { ExerciseSetService } from 'src/exercise-set/exercise-set.service';
 import User from 'src/shared/custom-decorators/user.decorator';
 import { SourceService } from 'src/source/source.service';
-import { SourceDocument } from 'src/source/types/source-interfaces';
+import { SourceDocument } from 'src/source/types/source-document.interface';
 
 @UseGuards(AuthGuard)
 @WebSocketGateway({

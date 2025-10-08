@@ -32,12 +32,34 @@ export class OpenaiService {
                 - Simplify complex concepts without losing important details.
                 - Use a clear, professional tone appropriate for the audience.
                 - Maintain factual accuracy and the original intent; do not add unrelated ideas.
-                Output format:
+                Custom behavior:
                 - Tone: ${generateAbstractiveSummaryDto.tone}
                 - Style: ${generateAbstractiveSummaryDto.style}
                 - Perspective: ${generateAbstractiveSummaryDto.perspective}
                 - Comprehensiveness: ${generateAbstractiveSummaryDto.comprehensionLevel}
-                - Length: ${generateAbstractiveSummaryDto.length}`;
+                - Length: ${generateAbstractiveSummaryDto.length}
+                Output format:
+                type TextMark = "bold" | "italic"; // allowed marks
+                type NodeType = "header" | "sub-header" | "body-text"; // node types
+                interface TextNode { // a text block
+                    type: NodeType; // header, sub-header, or body-text
+                    text: string; // the actual text
+                    marks?: TextMark[]; // optional formatting
+                }
+                interface DocNode { // document root
+                    type: "doc";
+                    content: TextNode[];
+                }
+                const example: DocNode = {
+                    type: "doc",
+                    content: [
+                        { type: "header", text: "My Blog Post", marks: ["bold"] },
+                        { type: "sub-header", text: "Introduction" },
+                        { type: "body-text", text: "This is the first paragraph.", marks: ["italic"] },
+                    ],
+                };
+                
+                Return only valid JSON in serialized form. Do not include extra text or formatting.`;
         const completion = await this.openaiClient.chat.completions.create({
             model: this.model,
             messages: [
